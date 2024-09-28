@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress, Box, Typography, Link } from '@mui/material';
+import { Button, CircularProgress, Box, Typography, Link, TextField, Divider } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // Create a dark theme using Material UI
@@ -22,25 +22,34 @@ const darkTheme = createTheme({
 const App = () => {
   const [quantumNumbers, setQuantumNumbers] = useState([]);
   const [loading, setLoading] = useState(false);
+  
+  // State for user inputs
+  const [minValue, setMinValue] = useState(0);
+  const [maxValue, setMaxValue] = useState(100);
+  const [numResults, setNumResults] = useState(3);
 
   const fetchQuantumNumbers = async () => {
     setLoading(true);
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}?length=3&type=uint8&size=1`, // Fetching 10 random numbers between 0-255
+        `${import.meta.env.VITE_API_URL}?length=${numResults}&type=uint8&size=1`,
         {
           method: 'GET',
           headers: {
-            'x-api-key': import.meta.env.VITE_API_KEY, // Use API key from environment variables
+            'x-api-key': import.meta.env.VITE_API_KEY,
           },
         }
       );
-      
+
       const data = await response.json();
 
-      // Convert numbers from (0-255) to (0-100), sort, and set to state
-      const convertedNumbers = data.data.map(num => Math.floor((num / 255) * 100)).sort((a, b) => b - a);
+      // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
+      const convertedNumbers = data.data.map(num => {
+        const scaledNum = Math.floor((num / 255) * (maxValue - minValue) + minValue);
+        return scaledNum;
+      }).sort((a, b) => b - a);
+
       setQuantumNumbers(convertedNumbers);
     } catch (error) {
       console.error('Error fetching quantum numbers:', error);
@@ -68,9 +77,11 @@ const App = () => {
         </Typography>
 
         <Typography variant="body1" gutterBottom>
-          Click the button to fetch and display 3 random numbers between 0-100.
+          Click the button to fetch random numbers.
         </Typography>
         
+        
+
         <Typography variant="body1" gutterBottom>
           Huge Gratitude for <Link href="https://quantumnumbers.anu.edu.au/">Australian National University (ANU)</Link>
         </Typography>
@@ -92,6 +103,40 @@ const App = () => {
             </>
           )}
         </Box>
+
+        <Divider sx={{ my: 2 }} />
+        <Typography variant="body1" gutterBottom>
+          customize:
+        </Typography>
+
+        <TextField
+          label="Minimum Value min 0"
+          type="number"
+          variant="outlined"
+          value={minValue}
+          onChange={(e) => setMinValue(Number(e.target.value))}
+          sx={{ m: 1 }}
+        />
+        
+        <TextField
+          label="Maximum Value max 255"
+          type="number"
+          variant="outlined"
+          value={maxValue}
+          onChange={(e) => setMaxValue(Number(e.target.value))}
+          sx={{ m: 1 }}
+        />
+        
+        <TextField
+          label="Number of Results"
+          type="number"
+          variant="outlined"
+          value={numResults}
+          onChange={(e) => setNumResults(Number(e.target.value))}
+          sx={{ m: 1 }}
+          inputProps={{ min: 1 }} // Minimum number of results to fetch
+        />
+
       </Box>
     </ThemeProvider>
   );
