@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress, Box, Typography } from '@mui/material';
+import { Button, CircularProgress, Box, Typography, Link } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // Create a dark theme using Material UI
@@ -68,7 +68,11 @@ const App = () => {
         </Typography>
 
         <Typography variant="body1" gutterBottom>
-          Click the button to fetch and display 10 random numbers between 0-100.
+          Click the button to fetch and display 3 random numbers between 0-100.
+        </Typography>
+        
+        <Typography variant="body1" gutterBottom>
+          Huge Gratitude for <Link href="https://quantumnumbers.anu.edu.au/">Australian National University (ANU)</Link>
         </Typography>
 
         <Button 
