@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress, Box, Typography, Link, TextField, Divider } from '@mui/material';
+import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // Create a dark theme using Material UI
@@ -24,6 +25,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Toggle visibility state
 
   // State for user inputs
   const [minValue, setMinValue] = useState(0);
@@ -54,44 +56,55 @@ const App = () => {
       setQuantumNumbers(convertedNumbers);
       setMessage(''); // Clear message if successful
     } catch (error) {
-      // Handle network error, retry with VITE_API_KEY2 if password matches
-      if (password === import.meta.env.VITE_PRIVATE) {
-        try {
-          const retryResponse = await fetch(
-            `${import.meta.env.VITE_API_URL}?length=${numResults}&type=uint8&size=1`,
-            {
-              method: 'GET',
-              headers: {
-                'x-api-key': import.meta.env.VITE_API_KEY2,
-              },
-            }
-          );
-          if (!retryResponse.ok) throw new Error('Second network error');
-
-          const retryData = await retryResponse.json();
-
-          const convertedNumbers = retryData.data
-            .map(num => Math.floor((num / 255) * (maxValue - minValue) + minValue))
-            .sort((a, b) => b - a);
-
-          setQuantumNumbers(convertedNumbers);
-          setMessage(''); // Clear message if retry is successful
-        } catch (retryError) {
-          console.error('Retry failed:', retryError);
-        }
-      } else {
-        // Show HAL 2001 message if password is incorrect
-        setMessage("I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)");
-        setQuantumNumbers([]);
-      }
-    } finally {
-      setLoading(false);
+      console.error('Failed with API Key:', apiKey);
+      throw error; // Rethrow error to handle retries
     }
   };
 
-  const handleFetch = () => {
+  const handleFetch = async () => {
     setLoading(true);
-    fetchQuantumNumbers(import.meta.env.VITE_API_KEY);
+
+    const apiKeys = [import.meta.env.VITE_API_KEY]; // Start with the first API key
+
+    if (password === import.meta.env.VITE_PRIVATE) {
+      apiKeys.push(
+        import.meta.env.VITE_API_KEY2,
+        import.meta.env.VITE_API_KEY3,
+        import.meta.env.VITE_API_KEY4
+      );
+    }
+
+    let success = false;
+
+    // Attempt fetching using each API key in sequence
+    for (const apiKey of apiKeys) {
+      try {
+        await fetchQuantumNumbers(apiKey);
+        success = true; // Mark success on first successful fetch
+        break; // Stop trying once successful
+      } catch (error) {
+        // Continue to the next API key if one fails
+        continue;
+      }
+    }
+
+    if (!success) {
+      // If all attempts fail, show HAL 2001 message
+      setMessage("I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)");
+      setQuantumNumbers([]);
+    }
+
+    setLoading(false);
+  };
+
+  const handlePasswordKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleFetch(); // Trigger fetch on "Enter" key press
+    }
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Toggle password visibility
   };
 
   return (
@@ -116,25 +129,39 @@ const App = () => {
           Click the button to fetch random numbers.
         </Typography>
 
-        <Typography variant="body1" gutterBottom sx={{ mb: 4 }}> {/* Added 44px padding */}
+        <Typography variant="body1" gutterBottom sx={{ mb: 4 }}>
           Huge Gratitude for <Link href="https://quantumnumbers.anu.edu.au/">Australian National University (ANU)</Link>
         </Typography>
 
         <TextField
           label="Enter Password"
-          type="password"
+          type={showPassword ? 'text' : 'password'} // Toggle between text and password types
           variant="outlined"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyPress={handlePasswordKeyPress} // Trigger action on "Enter"
           sx={{ m: 1 }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleTogglePasswordVisibility}
+                  edge="end"
+                  aria-label="toggle password visibility"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
 
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleFetch} 
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleFetch}
           disabled={loading}
-          sx={{ mb: 4 }} // 44px padding
+          sx={{ mb: 4 }}
         >
           {loading ? <CircularProgress size={24} /> : 'Fetch Random Numbers'}
         </Button>
