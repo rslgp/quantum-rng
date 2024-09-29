@@ -56,7 +56,6 @@ const App = () => {
       setQuantumNumbers(convertedNumbers);
       setMessage(''); // Clear message if successful
     } catch (error) {
-      console.error('Failed with API Key:', apiKey);
       throw error; // Rethrow error to handle retries
     }
   };
