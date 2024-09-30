@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment } from '@mui/material';
+import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment, Slider } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -20,14 +20,47 @@ const darkTheme = createTheme({
   },
 });
 
+// const convertToFivePointScale = (value) => {
+//   if (value <= 20) return 'Very Negative'; // Very negative
+//   if (value <= 40) return 'Negative'; // Negative
+//   if (value <= 60) return 'Neutral'; // Neutral
+//   if (value <= 80) return 'Positive'; // Positive
+//   return 'Very Positive'; // Very positive
+// };
+
+const convertToFivePointScale = (value) => {
+  // Normalize the value to the standard normal distribution
+  // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17
+  const mean = 50;
+  const stdDev = 17; // Rough approximation for 68% coverage
+  
+  // Calculate z-score
+  const zScore = (value - mean) / stdDev;
+
+  if (zScore <= -1.5) return 'Very Negative';  // Lower tail
+  if (zScore <= -0.5) return 'Negative';       // Below average
+  if (zScore <= 0.5) return 'Neutral';         // Near mean
+  if (zScore <= 1.5) return 'Positive';        // Above average
+  return 'Very Positive';                      // Upper tail
+};
+
+
+// Color scale from red to green based on the value
+const getBarColor = (value) => {
+  if (value === 'Very Negative') return '#f44336'; // Red
+  if (value === 'Negative') return '#ff9800'; // Orange
+  if (value === 'Neutral') return '#9e9e9e'; // Gray
+  if (value === 'Positive') return '#8bc34a'; // Light Green
+  if (value === 'Very Positive') return '#4caf50'; // Green
+  return '#9e9e9e'; // Default to Gray
+};
+
 const App = () => {
   const [quantumNumbers, setQuantumNumbers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false); // Toggle visibility state
-
-  // State for user inputs
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(100);
   const [numResults, setNumResults] = useState(3);
@@ -50,7 +83,7 @@ const App = () => {
 
       // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
       const convertedNumbers = data.data
-        .map(num => Math.floor((num / 255) * (maxValue - minValue) + minValue))
+        .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
         .sort((a, b) => b - a);
 
       setQuantumNumbers(convertedNumbers);
@@ -89,7 +122,9 @@ const App = () => {
 
     if (!success) {
       // If all attempts fail, show HAL 2001 message
-      setMessage("I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)");
+      setMessage(
+        "I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)"
+      );
       setQuantumNumbers([]);
     }
 
@@ -129,7 +164,10 @@ const App = () => {
         </Typography>
 
         <Typography variant="body1" gutterBottom sx={{ mb: 4 }}>
-          Huge Gratitude for <Link href="https://quantumnumbers.anu.edu.au/">Australian National University (ANU)</Link>
+          Huge Gratitude for{' '}
+          <Link href="https://quantumnumbers.anu.edu.au/">
+            Australian National University (ANU)
+          </Link>
         </Typography>
 
         <TextField
@@ -169,12 +207,37 @@ const App = () => {
           {quantumNumbers.length > 0 && (
             <>
               <Typography variant="h6">Quantum Numbers (Sorted):</Typography>
-              <Typography variant="body1">{quantumNumbers.join(', ')}</Typography>
+              {quantumNumbers.map((num, index) => {
+                const convertedValue = convertToFivePointScale(num);
+                return (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      mb: 2,
+                      width: '100%',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        height: 20,
+                        width: `${['Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive'].indexOf(convertedValue) * 25 + 25}%`,
+                        backgroundColor: getBarColor(convertedValue),
+                        transition: 'width 0.3s ease',
+                        mr: 2,
+                      }}
+                    />
+                    <Typography variant="body1">
+                      {convertedValue} ({num})
+                    </Typography>
+                  </Box>
+                );
+              })}
             </>
           )}
         </Box>
 
-        {/* Display error or status message */}
         {message && (
           <Typography variant="body1" color="error" sx={{ mt: 2 }}>
             {message}
