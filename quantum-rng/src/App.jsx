@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment, Slider } from '@mui/material';
+import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -19,41 +19,6 @@ const darkTheme = createTheme({
     },
   },
 });
-
-// const convertToFivePointScale = (value) => {
-//   if (value <= 20) return 'Very Negative'; // Very negative
-//   if (value <= 40) return 'Negative'; // Negative
-//   if (value <= 60) return 'Neutral'; // Neutral
-//   if (value <= 80) return 'Positive'; // Positive
-//   return 'Very Positive'; // Very positive
-// };
-
-const convertToFivePointScale = (value) => {
-  // Normalize the value to the standard normal distribution
-  // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17
-  const mean = 50;
-  const stdDev = 17; // Rough approximation for 68% coverage
-  
-  // Calculate z-score
-  const zScore = (value - mean) / stdDev;
-
-  if (zScore <= -1.5) return 'Very Negative';  // Lower tail
-  if (zScore <= -0.5) return 'Negative';       // Below average
-  if (zScore <= 0.5) return 'Neutral';         // Near mean
-  if (zScore <= 1.5) return 'Positive';        // Above average
-  return 'Very Positive';                      // Upper tail
-};
-
-
-// Color scale from red to green based on the value
-const getBarColor = (value) => {
-  if (value === 'Very Negative') return '#f44336'; // Red
-  if (value === 'Negative') return '#ff9800'; // Orange
-  if (value === 'Neutral') return '#9e9e9e'; // Gray
-  if (value === 'Positive') return '#8bc34a'; // Light Green
-  if (value === 'Very Positive') return '#4caf50'; // Green
-  return '#9e9e9e'; // Default to Gray
-};
 
 const App = () => {
   const [quantumNumbers, setQuantumNumbers] = useState([]);
@@ -178,6 +143,8 @@ const App = () => {
           onChange={(e) => setPassword(e.target.value)}
           onKeyPress={handlePasswordKeyPress} // Trigger action on "Enter"
           sx={{ m: 1 }}
+          name="password" // Add a name attribute to help password managers
+          autoComplete="current-password" // Allow Google Password Manager to identify the field
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
