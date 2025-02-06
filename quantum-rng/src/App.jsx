@@ -256,6 +256,10 @@ const App = () => {
               {quantumNumbers.map((num, index) => {
                 const convertedValue = convertedValues[index];
                 return (
+                  <>
+                  <Typography variant="body1">
+                    {convertedValue} ({num})
+                  </Typography>
                   <Box
                     key={index}
                     sx={{
@@ -268,16 +272,14 @@ const App = () => {
                     <Box
                       sx={{
                         height: 20,
-                        width: `${num}%`,
+                        width: `${scale.indexOf(convertedValue) * 25 + 25}%`,
                         backgroundColor: getBarColor(convertedValue),
                         transition: 'width 0.3s ease',
                         mr: 2,
                       }}
                     />
-                    <Typography variant="body1">
-                      {convertedValue} ({num})
-                    </Typography>
                   </Box>
+                  </>
                 );
               })}
             </>
