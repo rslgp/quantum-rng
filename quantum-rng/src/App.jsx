@@ -49,6 +49,9 @@ const getBarColor = (value) => {
 
 const App = () => {
   const [quantumNumbers, setQuantumNumbers] = useState([]);
+  const [convertedValues, setConvertedValues] = useState([]);
+  const [majorityResult, setMajority] = useState('');
+  const [scale, setScale] = useState(['Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive']);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -78,7 +81,7 @@ const App = () => {
         .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
         .sort((a, b) => b - a);
 
-      setQuantumNumbers(convertedNumbers);
+      setup(convertedNumbers);
       setMessage(''); // Clear message if successful
     } catch (error) {
       throw error; // Rethrow error to handle retries
@@ -132,6 +135,55 @@ const App = () => {
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword); // Toggle password visibility
   };
+
+
+  const setup = (quantumNumbers) =>{
+    setQuantumNumbers(quantumNumbers);
+    const counts = {
+      'Very Negative': 0,
+      'Negative': 0,
+      'Neutral': 0,
+      'Positive': 0,
+      'Very Positive': 0,
+    };
+  
+    // Convert all quantum numbers to the five-point scale and store them
+    const convertedValuesTemp = [];
+  
+    
+    // Count the occurrences of each sentiment
+    quantumNumbers.forEach((value) => {
+      const temp = convertToFivePointScale(value);     
+      convertedValuesTemp.push(temp);
+      counts[temp]++;
+    });
+    setConvertedValues(convertedValuesTemp);
+  
+    const getMajority = (counts) => {
+      // Aggregate counts into 3 options
+      const aggregatedCounts = {
+        Negative: counts['Very Negative'] + counts['Negative'],
+        Neutral: counts['Neutral'],
+        Positive: counts['Very Positive'] + counts['Positive'],
+      };
+
+      // Determine the majority result
+      let majorityResult;
+      if (aggregatedCounts.Negative > aggregatedCounts.Positive && aggregatedCounts.Negative > aggregatedCounts.Neutral) {
+        majorityResult = 'Negative';
+      } else if (aggregatedCounts.Positive > aggregatedCounts.Negative && aggregatedCounts.Positive > aggregatedCounts.Neutral) {
+        majorityResult = 'Positive';
+      } else {
+        majorityResult = 'Neutral (Free Will) (Arbítrio)'; // Neutral is the default if there's a tie or no clear majority
+      }
+      return majorityResult;
+    }
+  
+    // Find the majority result
+    const majorityResult = getMajority(counts);
+    setMajority(majorityResult);
+  }
+
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -197,12 +249,15 @@ const App = () => {
           {loading ? <CircularProgress size={24} /> : 'Fetch Random Numbers'}
         </Button>
 
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Majority Result: {majorityResult}
+        </Typography>
         <Box sx={{ mt: 4 }}>
           {quantumNumbers.length > 0 && (
             <>
               <Typography variant="h6">Quantum Numbers (Sorted):</Typography>
               {quantumNumbers.map((num, index) => {
-                const convertedValue = convertToFivePointScale(num);
+                const convertedValue = convertedValues[index];
                 return (
                   <Box
                     key={index}
@@ -216,7 +271,7 @@ const App = () => {
                     <Box
                       sx={{
                         height: 20,
-                        width: `${['Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive'].indexOf(convertedValue) * 25 + 25}%`,
+                        width: `${scale.indexOf(convertedValue) * 25 + 15}%`,
                         backgroundColor: getBarColor(convertedValue),
                         transition: 'width 0.3s ease',
                         mr: 2,
