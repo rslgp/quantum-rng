@@ -268,7 +268,7 @@ const App = () => {
                     <Box
                       sx={{
                         height: 20,
-                        width: `${scale.indexOf(convertedValue) * 25 + 25}%`,
+                        width: `${num}%`,
                         backgroundColor: getBarColor(convertedValue),
                         transition: 'width 0.3s ease',
                         mr: 2,
