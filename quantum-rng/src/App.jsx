@@ -170,7 +170,7 @@ const App = () => {
       } else if (aggregatedCounts.Positive > aggregatedCounts.Negative && aggregatedCounts.Positive > aggregatedCounts.Neutral) {
         majorityResult = 'Positive';
       } else {
-        majorityResult = 'Neutral (Free Will) (Arbítrio)'; // Neutral is the default if there's a tie or no clear majority
+        majorityResult = 'Neutral\nFree Will + Arbítrio'; // Neutral is the default if there's a tie or no clear majority
       }
       return majorityResult;
     }
@@ -245,8 +245,9 @@ const App = () => {
           {loading ? <CircularProgress size={24} /> : 'Fetch Random Numbers'}
         </Button>
 
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Majority Result: {majorityResult}
+        <Typography variant="h6" sx={{ mt: 2, whiteSpace: 'pre-line' }}>
+          Majority Result:<br />
+          {majorityResult}
         </Typography>
         <Box sx={{ mt: 4 }}>
           {quantumNumbers.length > 0 && (
@@ -267,7 +268,7 @@ const App = () => {
                     <Box
                       sx={{
                         height: 20,
-                        width: `${scale.indexOf(convertedValue) * 25 + 15}%`,
+                        width: `${scale.indexOf(convertedValue) * 25 + 25}%`,
                         backgroundColor: getBarColor(convertedValue),
                         transition: 'width 0.3s ease',
                         mr: 2,
