@@ -61,7 +61,6 @@ const App = () => {
   const [numResults, setNumResults] = useState(3);
 
   const fetchQuantumNumbers = async (apiKey) => {
-    try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}?length=${numResults}&type=uint8&size=1`,
         {
@@ -83,9 +82,6 @@ const App = () => {
 
       setup(convertedNumbers);
       setMessage(''); // Clear message if successful
-    } catch (error) {
-      throw error; // Rethrow error to handle retries
-    }
   };
 
   const handleFetch = async () => {
