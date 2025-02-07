@@ -4,6 +4,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import QuantumCommunication from './modules/message1/QuantumCommunication';
 
+const lab_url = import.meta.env.VITE_API_URL || '/vacuumquantum';
+
 // Create a dark theme using Material UI
 const darkTheme = createTheme({
   palette: {
@@ -63,7 +65,7 @@ const App = () => {
 
   const fetchQuantumNumbers = async (apiKey) => {
       const response = await fetch(
-        `/vacuumquantum?length=${numResults}&type=uint8&size=1`,
+        `${lab_url}?length=${numResults}&type=uint8&size=1`,
         {
           method: 'GET',
           headers: {
@@ -203,9 +205,6 @@ const App = () => {
           Tech Decision Arbitrio
         </Typography>
 
-        <Typography variant="body1" gutterBottom>
-          Click the button to fetch a Decision.
-        </Typography>
 
         <Typography variant="body1" gutterBottom sx={{ mb: 4, display: 'none' }}>
           Huge Gratitude for{' '}
@@ -239,21 +238,34 @@ const App = () => {
           }}
         />
 
+        <Typography graphy variant="body1" gutterBottom>
+          Click the button to fetch a Decision.
+        </Typography>
         <Button
           variant="contained"
           color="primary"
           onClick={handleFetch}
           disabled={loading}
-          sx={{ mb: 4 }}
+          sx={{
+            mb: '4vh',                // Responsive bottom margin
+            fontSize: '4vh',          // Scales text size with viewport width
+            minWidth: '80vw',         // Ensures button remains wide
+            minHeight: '22vh',         // Taller button for better UX
+            borderRadius: '8px',      // Rounded corners for modern design
+            textTransform: 'none',    // Keeps text readable (avoid all caps)
+            display: 'flex',         // Ensures content is centered
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          {loading ? <CircularProgress size={24} /> : 'Fetch Decision'}
+          {loading ? <CircularProgress size={24} /> : 'EXTERNAL HELP'}
         </Button>
 
-        <Typography variant="h6" sx={{ mt: 2, whiteSpace: 'pre-line' }}>
-          Majority Result:<br />
+        <Typography variant="h6" sx={{ whiteSpace: 'pre-line' }}>
+          Resposta:<br />
           {majorityResult}
         </Typography>
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 1 }}>
           {quantumNumbers.length > 0 && (
             <>
               <Typography variant="h6">Quantum Numbers (Sorted):</Typography>
