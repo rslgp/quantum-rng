@@ -1,0 +1,97 @@
+/* QuantumCommunication.css */
+
+/* Container for the entire component */
+.quantum-communication {
+  padding: 1rem;
+}
+
+/* Grid for managing the panels */
+.quantum-communication .MuiGrid-item {
+  border: 1px solid #000; /* Clear black border for the grid items */
+  border-radius: 10px; /* Rounded corners */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.quantum-communication .MuiGrid-item:hover {
+  transform: translateY(-5px); /* Slight elevation on hover */
+}
+
+/* Typography for headers */
+.quantum-communication h6 {
+  white-space: pre-line;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd; /* Added border under headings */
+}
+
+/* Text content with wrapping and white space formatting */
+.quantum-communication p,
+.quantum-communication li {
+  white-space: pre-line;
+  flex-grow: 1;
+  margin-bottom: 1rem;
+}
+
+/* Style for links */
+.quantum-communication .MuiLink-root {
+  color: #1a73e8;
+  text-decoration: none;
+  border-radius: 5px; /* Rounded links */
+}
+
+.quantum-communication .MuiLink-root:hover {
+  text-decoration: underline;
+  background-color: #f0f0f0; /* Light background on hover for links */
+}
+
+/* Styled sections (panels) */
+.quantum-communication .panel {
+  border: 1px solid #ffffff; /* Added border around each panel */
+  border-radius: 10px; /* Rounded corners for each panel */
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+/* Title for the communication model */
+.quantum-communication .model-title {
+  margin-top: 2rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  white-space: pre-line;
+}
+
+/* Styled lists for the model communication */
+.quantum-communication .model-list {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Content paragraph under the model */
+.quantum-communication .model-paragraph {
+  white-space: pre-line;
+  margin-bottom: 1rem;
+}
+
+/* Grid styling for responsive layout */
+@media screen and (max-width: 600px) {
+  .quantum-communication .MuiGrid-item {
+    padding: 0.5rem;
+  }
+
+  .quantum-communication h6 {
+    font-size: 1rem;
+  }
+
+  .quantum-communication p,
+  .quantum-communication li {
+    font-size: 0.875rem;
+  }
+
+  .quantum-communication .model-title {
+    font-size: 1rem;
+  }
+}

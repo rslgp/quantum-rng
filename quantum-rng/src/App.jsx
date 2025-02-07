@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import QuantumCommunication from './modules/message1/QuantumCommunication';
 
 // Create a dark theme using Material UI
 const darkTheme = createTheme({
@@ -62,7 +63,7 @@ const App = () => {
 
   const fetchQuantumNumbers = async (apiKey) => {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}?length=${numResults}&type=uint8&size=1`,
+        `/vacuumquantum?length=${numResults}&type=uint8&size=1`,
         {
           method: 'GET',
           headers: {
@@ -195,15 +196,18 @@ const App = () => {
           p: 3,
         }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{ display: 'none' }}>
           Quantum Random Number Generator
+        </Typography>
+        <Typography variant="h4" gutterBottom>
+          Tech Decision Arbitrio
         </Typography>
 
         <Typography variant="body1" gutterBottom>
-          Click the button to fetch random numbers.
+          Click the button to fetch a Decision.
         </Typography>
 
-        <Typography variant="body1" gutterBottom sx={{ mb: 4 }}>
+        <Typography variant="body1" gutterBottom sx={{ mb: 4, display: 'none' }}>
           Huge Gratitude for{' '}
           <Link href="https://quantumnumbers.anu.edu.au/">
             Australian National University (ANU)
@@ -242,7 +246,7 @@ const App = () => {
           disabled={loading}
           sx={{ mb: 4 }}
         >
-          {loading ? <CircularProgress size={24} /> : 'Fetch Random Numbers'}
+          {loading ? <CircularProgress size={24} /> : 'Fetch Decision'}
         </Button>
 
         <Typography variant="h6" sx={{ mt: 2, whiteSpace: 'pre-line' }}>
@@ -284,6 +288,7 @@ const App = () => {
               })}
             </>
           )}
+<QuantumCommunication></QuantumCommunication>
         </Box>
 
         {message && (
@@ -292,39 +297,42 @@ const App = () => {
           </Typography>
         )}
 
+
+
+        <Box sx={{ display: 'none' }}>
         <Divider sx={{ my: 2 }} />
+          <Typography variant="body1" gutterBottom>
+            Customize:
+          </Typography>
 
-        <Typography variant="body1" gutterBottom>
-          Customize:
-        </Typography>
+          <TextField
+            label="Minimum Value min 0"
+            type="number"
+            variant="outlined"
+            value={minValue}
+            onChange={(e) => setMinValue(Number(e.target.value))}
+            sx={{ m: 1 }}
+          />
 
-        <TextField
-          label="Minimum Value min 0"
-          type="number"
-          variant="outlined"
-          value={minValue}
-          onChange={(e) => setMinValue(Number(e.target.value))}
-          sx={{ m: 1 }}
-        />
+          <TextField
+            label="Maximum Value max 255"
+            type="number"
+            variant="outlined"
+            value={maxValue}
+            onChange={(e) => setMaxValue(Number(e.target.value))}
+            sx={{ m: 1 }}
+          />
 
-        <TextField
-          label="Maximum Value max 255"
-          type="number"
-          variant="outlined"
-          value={maxValue}
-          onChange={(e) => setMaxValue(Number(e.target.value))}
-          sx={{ m: 1 }}
-        />
-
-        <TextField
-          label="Number of Results"
-          type="number"
-          variant="outlined"
-          value={numResults}
-          onChange={(e) => setNumResults(Number(e.target.value))}
-          sx={{ m: 1 }}
-          inputProps={{ min: 1 }}
-        />
+          <TextField
+            label="Number of Results"
+            type="number"
+            variant="outlined"
+            value={numResults}
+            onChange={(e) => setNumResults(Number(e.target.value))}
+            sx={{ m: 1 }}
+            inputProps={{ min: 1 }}
+          />
+        </Box>
       </Box>
     </ThemeProvider>
   );
