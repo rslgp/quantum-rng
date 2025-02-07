@@ -4,6 +4,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import QuantumCommunication from './modules/message1/QuantumCommunication';
 
+const baseEndpoint = '/quantum-rng';
+
 // Create a dark theme using Material UI
 const darkTheme = createTheme({
   palette: {
@@ -63,7 +65,7 @@ const App = () => {
 
   const fetchQuantumNumbers = async (apiKey) => {
       const response = await fetch(
-        `/vacuumquantum?length=${numResults}&type=uint8&size=1`,
+        `${baseEndpoint}/vacuumquantum?length=${numResults}&type=uint8&size=1`,
         {
           method: 'GET',
           headers: {
