@@ -288,7 +288,6 @@ const App = () => {
               })}
             </>
           )}
-<QuantumCommunication></QuantumCommunication>
         </Box>
 
         {message && (
@@ -298,6 +297,7 @@ const App = () => {
         )}
 
 
+<QuantumCommunication></QuantumCommunication>
 
         <Box sx={{ display: 'none' }}>
         <Divider sx={{ my: 2 }} />

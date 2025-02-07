@@ -37,7 +37,9 @@ const QuantumCommunication = () => {
               Tecnologia
             </Typography>
             <Typography className="content-text">
-              Esta tecnologia mantém a não interferência dos humanos. Eu apenas faço a visualização dos dados e sigo um padrão de comunicação.
+              Esta tecnologia mantém a não interferência dos humanos. 
+              <br />
+              Ela faz apenas a visualização dos dados e sigo um padrão de comunicação.
               <br />
               Não capturo voz. É possível usar tanto mentalizando/pensando a pergunta quanto verbalizando.
             </Typography>
@@ -64,11 +66,15 @@ const QuantumCommunication = () => {
             </Typography>
 
             <Typography className="model-paragraph">
-              O passo 1 é feita por 3 vezes, e no final, para simplificar, (Passo 2) converte-se para três opções: negativo, neutro, positivo.
+              O passo 1 é feita por 3 vezes, e no final, para simplificar, 
+              <br />
+              <b>Passo 2</b>: converte-se para três opções: negativo, neutro, positivo.
             </Typography>
 
             <Typography className="model-paragraph">
-              O resultado final é determinado pela maioria dos resultados do passo 1, e a interpretação do resultado deve ser feita de acordo com o arbítrio independente do resultado obtido.
+              O resultado final é determinado pela maioria dos resultados do passo 1, 
+              <br/>
+              e a interpretação do resultado deve ser feita de acordo com o arbítrio independente do resultado obtido.
             </Typography>
           </Box>
         </Grid2>
@@ -82,7 +88,9 @@ const QuantumCommunication = () => {
             <Typography className="content-text">
               A crença varia de pessoa para pessoa, podendo ser em Deus ou em algo que está fora deste plano e pode intervir quando quiser.
               <br />
-              Através de experiências próprias, criei uma tecnologia que facilita outras pessoas a experienciar isso de forma mais "econômica", usando como referência a minha experiência única, no sentido de esforço divino para intervir quando desejar.
+              Através de experiências próprias, criei uma tecnologia que facilita outras pessoas a experienciar isso de forma mais "econômica", 
+              <br />
+              usando como referência a minha experiência única, no sentido de esforço divino para intervir quando desejar.
             </Typography>
           </Box>
         </Grid2>
