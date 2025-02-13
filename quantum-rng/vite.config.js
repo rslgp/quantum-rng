@@ -14,6 +14,11 @@ export default defineConfig(({ mode }) => {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
       },
+      '/auth': {
+        target: env.VITE_BACKEND_URL, // Your backend URL
+        changeOrigin: false,        
+        // rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
+      },
     },
     
   },

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import QuantumCommunication from './modules/message1/QuantumCommunication';
+import AuthContainer from './modules/auth/AuthContainer';
 
 const lab_url = import.meta.env.VITE_API_URL || '/vacuumquantum';
 
@@ -62,6 +63,32 @@ const App = () => {
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(100);
   const [numResults, setNumResults] = useState(3);
+
+  const [user, setUser] = useState(() => {
+    // Initialize user state from localStorage (if available)
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  useEffect(() => {
+    // fetch("http://localhost:3000/api/user", 
+    // { 
+    //   method: "GET",
+    //   credentials: "include",
+    //   headers: {
+    //     "Content-Type": "application/json", // Ensure proper content type
+    //   },
+    // })
+    //   .then((res) => res.json())
+    //   .then((user) => {
+    //     console.log("LOGGED1", user);
+    //     if (user) {
+    //       console.log("LOGGED", user);
+    //       setUser(user);
+    //     }
+    //   })
+    //   .catch(() => setUser(null));
+  }, []);
 
   const fetchQuantumNumbers = async (apiKey) => {
       const response = await fetch(
@@ -205,14 +232,6 @@ const App = () => {
           Tech Decision Arbitrio
         </Typography>
 
-
-        <Typography variant="body1" gutterBottom sx={{ mb: 4, display: 'none' }}>
-          Huge Gratitude for{' '}
-          <Link href="https://quantumnumbers.anu.edu.au/">
-            Australian National University (ANU)
-          </Link>
-        </Typography>
-
         <TextField
           label="Enter Password"
           type={showPassword ? 'text' : 'password'} // Toggle between text and password types
@@ -237,6 +256,11 @@ const App = () => {
             ),
           }}
         />
+
+<AuthContainer user={user} setUser={setUser}/>
+{
+  user? "logado" : "off"
+}
 
         <Typography graphy variant="body1" gutterBottom>
           Click the button to fetch a Decision.
