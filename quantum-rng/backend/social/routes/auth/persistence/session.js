@@ -35,4 +35,33 @@ const persist_session = session({
 //   saveUninitialized: true,
 // });
 
-export default persist_session;
+const RATE_LIMIT = 3; // Max requests allowed
+const WINDOW_TIME = 3600; // Time window in seconds (1 hour)
+
+async function rateLimiter(req, res, next) {
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const userId = req.user.id; // Get unique user ID from Passport
+    const key = `rate-limit:${userId}`;
+
+    let requestCount = await redisClient.get(key);
+
+    if (!requestCount) {
+        await redisClient.setex(key, WINDOW_TIME, 1); // Set key with expiry
+        return next();
+    }
+
+    requestCount = parseInt(requestCount);
+
+    if (requestCount >= RATE_LIMIT) {
+        return res.status(429).json({ error: "Too many requests. Try again later." });
+    }
+
+    await redisClient.incr(key); // Increment the request count
+    next();
+}
+
+
+export {persist_session, rateLimiter};

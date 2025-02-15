@@ -1,15 +1,15 @@
 import Router from "express";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import session from './persistence/session.js';
+import {persist_session} from './persistence/session.js';
 import { OAuth2Client } from "google-auth-library";
 
 const authRouter = Router();
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Initialize Google Auth Client
+const client = new OAuth2Client(process.env.GOOGLE_CLIENTID); // Initialize Google Auth Client
 
 // Configure Passport Google Strategy
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientID: process.env.GOOGLE_CLIENTID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: "/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
@@ -44,7 +44,7 @@ authRouter.post("/google/token", async (req, res) => {
     // Verify the token using Google's OAuth2 client
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID, // Ensure the token is for your app
+      audience: process.env.GOOGLE_CLIENTID, // Ensure the token is for your app
     });
 
     const payload = ticket.getPayload();
@@ -110,7 +110,7 @@ authRouter.get("/user", isAuthRoute, (req, res) => {
 
 const initAuth = (app) => {  
   //init middleware
-  app.use(session);
+  app.use(persist_session);
   
   // Initialize Passport globally
   app.use(passport.initialize());
