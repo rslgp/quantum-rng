@@ -35,11 +35,11 @@ app.get("/dashboard", isAuthRoute, (req, res) => {
 });
 
 
-app.get("DEBUG/count", isAuthRoute, rateLimiter, (req, res) => {
+app.get("/DEBUG/count", isAuthRoute, rateLimiter, (req, res) => {
   res.send(`Welcome, ${req.user.name} ${req.user.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
-app.get("DEBUG/reduce/:amount", isAuthRoute, async (req, res) => {
+app.get("/DEBUG/reduce/:amount", isAuthRoute, async (req, res) => {
   const {amount} = req.params;
   req.user.usage = await paySomeLimit(req.user.id, amount);
   res.send(`Welcome, ${req.user.name} ${req.user.usage}! <a href="/auth/logout">Logout</a>`);
