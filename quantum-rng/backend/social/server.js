@@ -35,14 +35,17 @@ app.get("/dashboard", isAuthRoute, (req, res) => {
 });
 
 
-app.get("/DEBUG/count", isAuthRoute, rateLimiter, (req, res) => {
-  res.send(`Welcome, ${req.user.name} ${req.user.usage}! <a href="/auth/logout">Logout</a>`);
+app.get("/DEBUG/count", rateLimiter, (req, res) => {
+  res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
 app.get("/DEBUG/reduce/:amount", isAuthRoute, async (req, res) => {
   const {amount} = req.params;
-  req.user.usage = await paySomeLimit(req.user.id, amount);
-  res.send(`Welcome, ${req.user.name} ${req.user.usage}! <a href="/auth/logout">Logout</a>`);
+  const id = req.user?.id || req.headers['x-real-ip'] || 'anom';
+  const requestCount = await paySomeLimit(id, amount);
+  if(req.user) req.user.usage = requestCount;
+  req.usage = requestCount;
+  res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
 // Start server

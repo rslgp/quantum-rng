@@ -10,8 +10,8 @@ const KEY_RATE_LIMIT = `rate-limit:`;
 const WINDOW_TIME_GLOBAL = 8 * 3600; // Time window in seconds (1 hour)
 
 async function rateLimiter(req, res, next) {
-    let userId = req.headers['x-real-ip'] || ''; //default use ip
-
+    let userId = req.headers['x-real-ip'] || 'anom'; //default use ip
+    console.log(userId);
     let RATE_LIMIT = RATE_LIMIT_GLOBAL;
     let WINDOW_TIME = WINDOW_TIME_GLOBAL;
 
@@ -36,7 +36,7 @@ async function rateLimiter(req, res, next) {
     }
 
     requestCount = parseInt(requestCount);
-
+    console.log("RATE LIMIT COUNT". requestCount);
     if (requestCount >= RATE_LIMIT) {
         
         return res.status(429).json({ error: "Too many requests. Try again later.", missingTime: await getMissingTime(key) });
@@ -45,7 +45,8 @@ async function rateLimiter(req, res, next) {
     const usage = await redisClient.incr(key); // Increment the request count
     
     console.log("usage", usage);
-    req.user.usage = usage;
+    if(req.user) req.usage = usage;
+    req.usage = usage;
     next();
 }
 
