@@ -1,29 +1,42 @@
 import Router from "express";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import {persist_session} from './persistence/session.js';
+import persist_session from '../lib/persistence/session.js';
 import { OAuth2Client } from "google-auth-library";
+import { patchPremium } from "./premium.js";
 
 const authRouter = Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENTID); // Initialize Google Auth Client
+
+const userDataPattern = async (payload) => {
+  let user = {
+    id: payload.sub,
+    name: payload.name,
+    email: payload.email,
+    picture: payload.picture,
+  };
+  user = await patchPremium(user);
+  return user;
+}
 
 // Configure Passport Google Strategy
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENTID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: "/auth/google/callback"
-}, (accessToken, refreshToken, profile, done) => {
+}, async (accessToken, refreshToken, profile, done) => {
   // Store user profile in session
-  return done(null, profile);
+  const user = await userDataPattern(profile._json)
+  return done(null, user);
 }));
 
 // Serialize user (store in session)
-passport.serializeUser((user, done) => {
+passport.serializeUser( async (user, done) => {
   done(null, user);
 });
 
 // Deserialize user (retrieve from session)
-passport.deserializeUser((user, done) => {
+passport.deserializeUser( async (user, done) => {
   done(null, user);
 });
 
@@ -56,12 +69,7 @@ authRouter.post("/google/token", async (req, res) => {
     // For simplicity, let's assume the user is created
 
     // Simulate user object (You can store this in your DB)
-    const user = {
-      id: payload.sub,
-      name: payload.name,
-      email: payload.email,
-      picture: payload.picture,
-    };
+    let user = await userDataPattern(payload);
 
     // Serialize user into session (store in session or JWT)
     req.login(user, (err) => {
@@ -85,13 +93,15 @@ authRouter.get("/google/callback",
   }
 );
 
+const LOGOUT_LOGIC = (req, res) => {
+  req.logout(() => {
+      req.session.destroy(); // clear session on redis
+      res.status(200).json({ message: "Sucess logout" });
+  });
+}
 // Logout route
-authRouter.post("/logout", (req, res) => {
-    req.logout(() => {
-        req.session.destroy(); // clear session on redis
-        res.status(200).json({ message: "Sucess logout" });
-    });
-});
+authRouter.post("/logout", LOGOUT_LOGIC);
+authRouter.get("/logout", LOGOUT_LOGIC);
 
 const isAuthRoute = (req, res, next) => {
   // middleware

@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import express from "express";
 import cors from 'cors';
-import { authRouter, initAuth, isAuthRoute } from "./routes/auth/core.js";
+import { authRouter, initAuth, isAuthRoute } from "./routes/auth/auth_core.js";
+import rateLimiter, {paySomeLimit} from './routes/middleware/rate_limit.js';
 
 const app = express();
 app.use(express.json());
@@ -30,7 +31,18 @@ app.get("/", (req, res) => {
 
 // Protected dashboard route
 app.get("/dashboard", isAuthRoute, (req, res) => {
-  res.send(`Welcome, ${req.user.displayName}! <a href="/auth/logout">Logout</a>`);
+  res.send(`Welcome, ${req.user.name}! <a href="/auth/logout">Logout</a>`);
+});
+
+
+app.get("DEBUG/count", isAuthRoute, rateLimiter, (req, res) => {
+  res.send(`Welcome, ${req.user.name} ${req.user.usage}! <a href="/auth/logout">Logout</a>`);
+});
+
+app.get("DEBUG/reduce/:amount", isAuthRoute, async (req, res) => {
+  const {amount} = req.params;
+  req.user.usage = await paySomeLimit(req.user.id, amount);
+  res.send(`Welcome, ${req.user.name} ${req.user.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
 // Start server
