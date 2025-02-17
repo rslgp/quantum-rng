@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { v4 as uuidv4 } from 'uuid';
 
+// charge 0.99% per pix
 
 const client = new MercadoPagoConfig({ accessToken: 'TEST-114259758444895-021710-5c4f7dfa315699763de883b21e6e2f17-241379422' });
 const payments = new Payment(client);
