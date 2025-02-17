@@ -3,6 +3,7 @@ import express from "express";
 import cors from 'cors';
 import { authRouter, initAuth, isAuthRoute } from "./routes/auth/auth_core.js";
 import rateLimiter, {paySomeLimit} from './routes/middleware/rate_limit.js';
+import consultQuantum from './routes/service/quantum.js';
 
 const app = express();
 app.use(express.json());
@@ -39,14 +40,16 @@ app.get("/DEBUG/count", rateLimiter, (req, res) => {
   res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
-app.get("/DEBUG/reduce/:amount", isAuthRoute, async (req, res) => {
+app.get("/DEBUG/reduce/:amount", async (req, res) => {
   const {amount} = req.params;
   const id = req.user?.id || req.headers['x-real-ip'] || 'anom';
-  const requestCount = await paySomeLimit(id, amount);
+  const requestCount = await paySomeLimit(id, amount);  
   if(req.user) req.user.usage = requestCount;
   req.usage = requestCount;
   res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
+
+app.get('/vacuumquantum', rateLimiter, consultQuantum);
 
 // Start server
 const PORT = 3000;

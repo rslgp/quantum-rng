@@ -16,9 +16,11 @@ async function rateLimiter(req, res, next) {
     let WINDOW_TIME = WINDOW_TIME_GLOBAL;
 
     if (req.user) {
+        if(req.user.id==='118176977539918205863') next(); //me rafaelleao user
         RATE_LIMIT = RATE_LIMIT_USER;
         // check if premium on redis
         userId = req.user.id; // Get unique user ID from Passport
+        console.log("user",userId);
 
         if(req.user.isPremium){
             RATE_LIMIT = RATE_LIMIT_PREMIUM;
@@ -36,16 +38,15 @@ async function rateLimiter(req, res, next) {
     }
 
     requestCount = parseInt(requestCount);
-    console.log("RATE LIMIT COUNT". requestCount);
+    
     if (requestCount >= RATE_LIMIT) {
         
         return res.status(429).json({ error: "Too many requests. Try again later.", missingTime: await getMissingTime(key) });
     }
-    console.log("requestCount", requestCount);
+
     const usage = await redisClient.incr(key); // Increment the request count
     
-    console.log("usage", usage);
-    if(req.user) req.usage = usage;
+    if(req.user) req.user.usage = usage;
     req.usage = usage;
     next();
 }

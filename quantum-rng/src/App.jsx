@@ -117,36 +117,38 @@ const App = () => {
   const handleFetch = async () => {
     setLoading(true);
 
-    const apiKeys = [import.meta.env.VITE_API_KEY]; // Start with the first API key
+    const response = await fetch(
+      `/vacuumquantum`,
+      {
+        method: 'GET',
+      }
+    );
+    // if (!response.ok) throw new Error('Network error');
 
-    if (password === import.meta.env.VITE_PRIVATE) {
-      apiKeys.push(
-        import.meta.env.VITE_API_KEY2,
-        import.meta.env.VITE_API_KEY3,
-        import.meta.env.VITE_API_KEY4
-      );
-    }
+    const body_json = await response.json();
+    console.log(body_json.result);
+    if(body_json.result){
+      const {success, data} = body_json.result;
+      if(success===false){
+        // If all attempts fail, show HAL 2001 message
+        setMessage(
+          "I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)"
+        );
+        setQuantumNumbers([]);
+      }else{
+        // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
+        const convertedNumbers = data
+          .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
+          .sort((a, b) => b - a);
+    
+        setup(convertedNumbers);
+        setMessage(''); // Clear message if successful
 
-    let success = false;
-
-    // Attempt fetching using each API key in sequence
-    for (const apiKey of apiKeys) {
-      try {
-        await fetchQuantumNumbers(apiKey);
-        success = true; // Mark success on first successful fetch
-        break; // Stop trying once successful
-      } catch (error) {
-        // Continue to the next API key if one fails
-        continue;
       }
     }
 
-    if (!success) {
-      // If all attempts fail, show HAL 2001 message
-      setMessage(
-        "I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)"
-      );
-      setQuantumNumbers([]);
+    if(body_json.error){
+      setMessage(`você pode usar novamente em: ${body_json.missingTime}`); // Clear message if successful
     }
 
     setLoading(false);
@@ -258,8 +260,9 @@ const App = () => {
         />
 
 <AuthContainer user={user} setUser={setUser}/>
+<br/>
 {
-  user? "logado" : "off"
+  user? "logado" : "incognito"
 }
 
         <Typography graphy variant="body1" gutterBottom>

@@ -1,6 +1,9 @@
 import Redis from 'ioredis';
 import { RedisStore } from 'connect-redis';
 import moment from 'moment';
+import 'moment/locale/pt-br.js'; // Importa o idioma PT-BR
+
+moment.locale('pt-br'); // Define o idioma
 
 // Create a Redis client using ioredis
 const redisClient = new Redis({

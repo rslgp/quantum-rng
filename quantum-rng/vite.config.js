@@ -10,13 +10,13 @@ export default defineConfig(({ mode }) => {
   server: {
     proxy: {
       '/vacuumquantum': {
-        target: env.VITE_API_URL, // Your backend URL
+        target: env.VITE_BACKEND_URL, // Your backend URL
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
+        // rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
       },
       '/auth': {
         target: env.VITE_BACKEND_URL, // Your backend URL
-        changeOrigin: false,        
+        changeOrigin: true,        
         // rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
       },
     },
