@@ -29,7 +29,7 @@ const convertToFivePointScale = (value) => {
   // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17
   const mean = 50;
   const stdDev = 17; // Rough approximation for 68% coverage
-  
+
   // Calculate z-score
   const zScore = (value - mean) / stdDev;
 
@@ -63,6 +63,9 @@ const App = () => {
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(100);
   const [numResults, setNumResults] = useState(3);
+  const [showPremium, setShowPremium] = useState(true); // Toggle visibility state
+  const [loadingMoreDecision, setLoadingMoreDecision] = useState(false);
+  const [loadingPremium, setLoadingPremium] = useState(false);
 
   const [user, setUser] = useState(() => {
     // Initialize user state from localStorage (if available)
@@ -91,28 +94,51 @@ const App = () => {
   }, []);
 
   const fetchQuantumNumbers = async (apiKey) => {
-      const response = await fetch(
-        `${lab_url}?length=${numResults}&type=uint8&size=1`,
-        {
-          method: 'GET',
-          headers: {
-            'x-api-key': apiKey, // Use dynamic API key
-          },
-        }
-      );
+    const response = await fetch(
+      `${lab_url}?length=${numResults}&type=uint8&size=1`,
+      {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey, // Use dynamic API key
+        },
+      }
+    );
 
-      if (!response.ok) throw new Error('Network error');
+    if (!response.ok) throw new Error('Network error');
 
-      const data = await response.json();
+    const data = await response.json();
 
-      // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
-      const convertedNumbers = data.data
-        .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
-        .sort((a, b) => b - a);
+    // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
+    const convertedNumbers = data.data
+      .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
+      .sort((a, b) => b - a);
 
-      setup(convertedNumbers);
-      setMessage(''); // Clear message if successful
+    setup(convertedNumbers);
+    setMessage(''); // Clear message if successful
   };
+
+  const stripeCheckout = async () => {
+
+    setLoadingPremium(true);
+
+    const response = await fetch(
+      `/payment/stripe/checkout`,
+      {
+        method: 'GET',
+      }
+    );
+    // if (!response.ok) throw new Error('Network error');
+
+    setLoadingPremium(false);
+    const body_json = await response.json();
+    console.log(body_json);
+    const { sessionId } = body_json;
+
+    const stripe = Stripe('pk_test_51QsvxJK56JTr9UcaovP6KPDxB7BIzAEIA8YHtc511uHZOBhOwjcDQHGrlt1iueczdqZsBu8MVPRy8LhQ0Z9ua17s008yLmL59f');
+    await stripe.redirectToCheckout({ sessionId });
+
+
+  }
 
   const handleFetch = async () => {
     setLoading(true);
@@ -127,27 +153,28 @@ const App = () => {
 
     const body_json = await response.json();
     console.log(body_json.result);
-    if(body_json.result){
-      const {success, data} = body_json.result;
-      if(success===false){
+    if (body_json.result) {
+      const { success, data } = body_json.result;
+      if (success === false) {
         // If all attempts fail, show HAL 2001 message
         setMessage(
           "I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)"
         );
         setQuantumNumbers([]);
-      }else{
+      } else {
         // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
         const convertedNumbers = data
           .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
           .sort((a, b) => b - a);
-    
+
         setup(convertedNumbers);
         setMessage(''); // Clear message if successful
 
       }
     }
 
-    if(body_json.missingTime){
+    if (body_json.missingTime) {
+      setShowPremium(true);
       setMessage(`você pode usar novamente em: ${body_json.missingTime}`); // Clear message if successful
     }
 
@@ -165,7 +192,7 @@ const App = () => {
   };
 
 
-  const setup = (quantumNumbers) =>{
+  const setup = (quantumNumbers) => {
     setQuantumNumbers(quantumNumbers);
     const counts = {
       'Very Negative': 0,
@@ -174,19 +201,19 @@ const App = () => {
       'Positive': 0,
       'Very Positive': 0,
     };
-  
+
     // Convert all quantum numbers to the five-point scale and store them
     const convertedValuesTemp = [];
-  
-    
+
+
     // Count the occurrences of each sentiment
     quantumNumbers.forEach((value) => {
-      const temp = convertToFivePointScale(value);     
+      const temp = convertToFivePointScale(value);
       convertedValuesTemp.push(temp);
       counts[temp]++;
     });
     setConvertedValues(convertedValuesTemp);
-  
+
     const getMajority = (counts) => {
       // Aggregate counts into 3 options
       const aggregatedCounts = {
@@ -206,7 +233,7 @@ const App = () => {
       }
       return majorityResult;
     }
-  
+
     // Find the majority result
     const majorityResult = getMajority(counts);
     setMajority(majorityResult);
@@ -259,11 +286,11 @@ const App = () => {
           }}
         />
 
-<AuthContainer user={user} setUser={setUser}/>
-<br/>
-{
-  user? "logado" : "incognito"
-}
+        <AuthContainer user={user} setUser={setUser} />
+        <br />
+        {
+          user ? "logado" : "incognito"
+        }
 
         <Typography graphy variant="body1" gutterBottom>
           Click the button to fetch a Decision.
@@ -300,28 +327,28 @@ const App = () => {
                 const convertedValue = convertedValues[index];
                 return (
                   <>
-                  <Typography variant="body1">
-                    {convertedValue} ({num})
-                  </Typography>
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      mb: 2,
-                      width: '100%',
-                    }}
-                  >
+                    <Typography variant="body1">
+                      {convertedValue} ({num})
+                    </Typography>
                     <Box
+                      key={index}
                       sx={{
-                        height: 20,
-                        width: `${num}%`,
-                        backgroundColor: getBarColor(convertedValue),
-                        transition: 'width 0.3s ease',
-                        mr: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 2,
+                        width: '100%',
                       }}
-                    />
-                  </Box>
+                    >
+                      <Box
+                        sx={{
+                          height: 20,
+                          width: `${num}%`,
+                          backgroundColor: getBarColor(convertedValue),
+                          transition: 'width 0.3s ease',
+                          mr: 2,
+                        }}
+                      />
+                    </Box>
                   </>
                 );
               })}
@@ -336,10 +363,63 @@ const App = () => {
         )}
 
 
-<QuantumCommunication></QuantumCommunication>
+        {showPremium && (
+
+
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => { console.log(loadingMoreDecision); setLoadingMoreDecision(!loadingMoreDecision) }}
+              disabled={loadingMoreDecision}
+              sx={{
+                mb: '4vh',                // Responsive bottom margin
+                fontSize: { xs: '22px', sm: '22px' },          // Scales text size with viewport width
+                // minWidth: '80vw',         // Ensures button remains wide
+                // minHeight: '22vh',         // Taller button for better UX
+                borderRadius: '8px',      // Rounded corners for modern design
+                textTransform: 'none',    // Keeps text readable (avoid all caps)
+                display: 'flex',         // Ensures content is centered
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {loadingMoreDecision ? <CircularProgress size={24} /> : 'Quero mais 3 Decisoes'}
+            </Button>
+
+            {user && (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={stripeCheckout}
+                  disabled={loadingPremium}
+                  sx={{
+                    mb: '4vh',                // Responsive bottom margin
+                    fontSize: { xs: '22px', sm: '22px' },          // Scales text size with viewport width
+                    // minWidth: '80vw',         // Ensures button remains wide
+                    // minHeight: '22vh',         // Taller button for better UX
+                    borderRadius: '8px',      // Rounded corners for modern design
+                    textTransform: 'none',    // Keeps text readable (avoid all caps)
+                    display: 'flex',         // Ensures content is centered
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    whiteSpace: 'pre-line',
+                  }}
+                >
+                  {loadingPremium ? <CircularProgress size={24} /> : 'Quero ser Premium \ne ter mais Decisoes'}
+                </Button>
+
+              </>
+            )}
+          </>
+        )}
+
+
+        <QuantumCommunication></QuantumCommunication>
 
         <Box sx={{ display: 'none' }}>
-        <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 2 }} />
           <Typography variant="body1" gutterBottom>
             Customize:
           </Typography>

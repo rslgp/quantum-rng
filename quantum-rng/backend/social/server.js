@@ -6,6 +6,7 @@ import rateLimiter, {paySomeLimit} from './routes/middleware/rate_limit.js';
 import consultQuantum from './routes/service/quantum.js';
 import setupWebhook from './routes/payment/webhook.js';
 import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
+import paymentRouter from './routes/payment/paymentRouter.js';
 
 const app = express();
 setupWebhookStripe(app, express);
@@ -26,6 +27,7 @@ app.use(cors({
 
 // Use authRouter for authentication routes
 app.use("/auth", authRouter);
+app.use("/payment", paymentRouter);
 
 // Routes
 app.get("/", (req, res) => {

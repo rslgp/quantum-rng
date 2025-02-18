@@ -13,5 +13,11 @@ const patchPremium = async (user) => {
         }
     }
     return user;
-  }
-export {patchPremium}
+}
+
+const WINDOW_TIME = 30 * 24 * 3600;
+const createPremium = async (userId) => {
+    const key_premium = `premium:${userId}`;
+    await redisClient.setex(key_premium, WINDOW_TIME, 1); // Set key with expiry
+}
+export {patchPremium, createPremium}

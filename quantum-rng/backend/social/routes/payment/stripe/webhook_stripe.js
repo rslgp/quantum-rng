@@ -5,7 +5,7 @@ const setupWebhookStripe = (app, express) => {
     app.post('/webhook/stripe/', express.raw({ type: "application/json" }), (req, res) => {
         // console.log(req.query, req.body, req.params, req.headers);
         const sig = req.headers["stripe-signature"];
-        if(!sig){
+        if (!sig) {
             res.status(200).send('IGNORED');
             return;
         }
@@ -24,13 +24,13 @@ const setupWebhookStripe = (app, express) => {
             console.error("Webhook signature verification failed.", err.message);
             return res.status(400).send(`Webhook Error: ${err.message}`);
         }
-        
+
         console.log(event);
         const { payment_status, metadata } = event.data.object;
         console.log("METADATA", metadata, event.type);
         if (payment_status === 'paid') {
             const { userId } = metadata;
-            console.log("NEW PREMIUM "+ userId);
+            console.log("NEW PREMIUM " + userId);
         }
 
         res.status(200).send('Received');
