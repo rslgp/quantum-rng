@@ -14,6 +14,7 @@ const userDataPattern = async (payload) => {
     name: payload.name,
     email: payload.email,
     picture: payload.picture,
+    // sessionID: payload.sessionID,
   };
   user = await patchPremium(user);
   return user;
@@ -69,6 +70,7 @@ authRouter.post("/google/token", async (req, res) => {
     // For simplicity, let's assume the user is created
 
     // Simulate user object (You can store this in your DB)
+    //req.sessionID
     let user = await userDataPattern(payload);
 
     // Serialize user into session (store in session or JWT)
@@ -89,6 +91,8 @@ authRouter.post("/google/token", async (req, res) => {
 authRouter.get("/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
+    // called after passport passport.use(new GoogleStrategy({
+    // req.user.sessionID = req.sessionID;
     res.redirect("/dashboard");
   }
 );

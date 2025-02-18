@@ -1,8 +1,9 @@
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_0c300591b67af459accbbd35de3eab9dea8e45b6590a73760ee1b95a28d57e62';
+import { createPremium } from '../../auth/premium.js';
 import stripe from './stripe_premade.js';
 
 const setupWebhookStripe = (app, express) => {
-    app.post('/webhook/stripe/', express.raw({ type: "application/json" }), (req, res) => {
+    app.post('/webhook/stripe/', express.raw({ type: "application/json" }), async (req, res) => {
         // console.log(req.query, req.body, req.params, req.headers);
         const sig = req.headers["stripe-signature"];
         if (!sig) {
@@ -31,6 +32,7 @@ const setupWebhookStripe = (app, express) => {
         if (payment_status === 'paid') {
             const { userId } = metadata;
             console.log("NEW PREMIUM " + userId);
+            await createPremium(userId);
         }
 
         res.status(200).send('Received');
