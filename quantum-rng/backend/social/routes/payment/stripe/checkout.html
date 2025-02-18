@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stripe Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <h1>Buy Example Product</h1>
+    <button id="checkout-button">Checkout</button>
+
+    <script>
+        const stripe = Stripe('pk_test_51QsvxJK56JTr9UcaovP6KPDxB7BIzAEIA8YHtc511uHZOBhOwjcDQHGrlt1iueczdqZsBu8MVPRy8LhQ0Z9ua17s008yLmL59f');
+
+        document.getElementById('checkout-button').addEventListener('click', async () => {
+
+            await stripe.redirectToCheckout({ sessionId: 'cs_test_a1VFWKlHEDx5AUlGC0QRQtyW90l19aEQqybYHSJrjwts4OGHd0fjJ96KzK' });
+        });
+    </script>
+</body>
+</html>

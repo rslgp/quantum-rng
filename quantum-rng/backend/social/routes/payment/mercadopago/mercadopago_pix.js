@@ -52,3 +52,29 @@ payments.create({
 // } })
 // 	.then(console.log).catch(console.log);
 
+
+const createSubscription = async () => {
+    try {
+      const subscriptionData = {
+        payer_email: 'test_user_123456@testuser.com', // Test user email
+        back_url: 'https://437d-177-37-240-64.ngrok-free.app/webhook', // URL to redirect after payment
+        reason: 'Monthly Subscription', // Description of the subscription
+        auto_recurring: {
+          frequency: 1, // Frequency of the subscription (1 = monthly)
+          frequency_type: 'months',
+          transaction_amount: 100.00, // Amount to charge
+          currency_id: 'BRL', // Currency (e.g., BRL for Brazilian Real)
+        },
+      };
+  
+      const response = await mercadopago.preapproval.create(subscriptionData);
+      console.log('Subscription ID:', response.body.id);
+      return response.body.init_point; // URL to redirect the user to the payment screen
+    } catch (error) {
+      console.error('Error creating subscription:', error);
+    }
+  };
+  
+  createSubscription().then((initPoint) => {
+    console.log('Redirect user to:', initPoint);
+  });

@@ -13,6 +13,7 @@
     "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.4",
     "sdk-node-apis-efi": "^1.2.17",
+    "stripe": "^17.6.0",
     "uuid": "^11.0.5"
   },
   "name": "arbitrio",

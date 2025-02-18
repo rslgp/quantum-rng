@@ -4,8 +4,11 @@ import cors from 'cors';
 import { authRouter, initAuth, isAuthRoute } from "./routes/auth/auth_core.js";
 import rateLimiter, {paySomeLimit} from './routes/middleware/rate_limit.js';
 import consultQuantum from './routes/service/quantum.js';
+import setupWebhook from './routes/payment/webhook.js';
+import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
 
 const app = express();
+setupWebhookStripe(app, express);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,6 +53,8 @@ app.get("/DEBUG/reduce/:amount", async (req, res) => {
 });
 
 app.get('/vacuumquantum', rateLimiter, consultQuantum);
+
+setupWebhook(app, express);
 
 // Start server
 const PORT = 3000;
