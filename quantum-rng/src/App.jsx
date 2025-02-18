@@ -147,7 +147,7 @@ const App = () => {
       }
     }
 
-    if(body_json.error){
+    if(body_json.missingTime){
       setMessage(`você pode usar novamente em: ${body_json.missingTime}`); // Clear message if successful
     }
 

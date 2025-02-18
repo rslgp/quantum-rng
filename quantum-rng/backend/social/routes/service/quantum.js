@@ -37,7 +37,8 @@ const consultQuantum = async (req,res)=>{
     }
     const result = {
         success,
-        data: response?.data
+        data: response?.data,
+        usage: req.usage,
     }
     res.json({result});
   }
