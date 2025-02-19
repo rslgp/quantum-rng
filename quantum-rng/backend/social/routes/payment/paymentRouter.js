@@ -5,7 +5,7 @@ const paymentRouter = Router();
 
 paymentRouter.get('/stripe/checkout', async (req, res) => {
     const userId = req.user.id;
-    const sessionId = await checkout_session(userId);
+    const sessionId = await checkout_session(userId, req.query);
     res.status(200).send({sessionId});
 });
 

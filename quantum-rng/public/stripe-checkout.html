@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
       margin: 0;
       background-color: #f4f4f9;
     }
+
     button {
       padding: 10px 20px;
       font-size: 16px;
@@ -24,12 +26,14 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     button:disabled {
       background-color: #ccc;
       cursor: not-allowed;
     }
   </style>
 </head>
+
 <body>
   <div>
     <h1>Você será direcionado ao Stripe Checkout</h1>
@@ -38,7 +42,16 @@
   <script>
     const stripeCheckout = async () => {
       try {
-        const response = await fetch('/backend/payment/stripe/checkout', {
+        const urlParams = new URLSearchParams(window.location.search);
+        let product = urlParams.get('product');  // Retrieve 'product' from query string
+        let amount = urlParams.get('amount');  // Retrieve 'quantity' from query string
+
+        if (!product || !amount) {
+          product = 'mais_decisoes';
+          amount = 1;
+        }
+
+        const response = await fetch(`/backend/payment/stripe/checkout?product=${product}&amount=${amount}`, {
           method: 'GET',
         });
 
@@ -57,4 +70,5 @@
     stripeCheckout();
   </script>
 </body>
+
 </html>

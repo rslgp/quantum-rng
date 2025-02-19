@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import QuantumCommunication from './modules/message1/QuantumCommunication';
 import AuthContainer from './modules/auth/AuthContainer';
+import SubscriptionPanels from './modules/payment/SubscriptionPanels';
 
 const lab_url = import.meta.env.VITE_API_URL || '/vacuumquantum';
 
@@ -117,7 +118,7 @@ const App = () => {
     setMessage(''); // Clear message if successful
   };
 
-  const stripeCheckout = async () => {
+  const stripeCheckout = async (product = 'mais_decisoes', quantity = 1) => {
 
     setLoadingPremium(true);
 
@@ -127,7 +128,12 @@ const App = () => {
     //    method: 'GET',
     //  }
     //);
-    window.open('/quantum-rng/stripe-checkout.html', '_blank');
+    const url_stripe_checkout = `/quantum-rng/stripe-checkout.html?product=${product}&amount=${quantity}`;
+    const newWindow = window.open(url_stripe_checkout, '_blank');
+    if (newWindow) {
+      newWindow.opener = null;  // Prevent access to the opener
+      newWindow.location.replace(url_stripe_checkout);  // Ensure referrer info isn't sent
+    }
 
     const eventSource = new EventSource(`/backend/event/subscribe`);
     eventSource.onmessage = async (event) => {
@@ -415,7 +421,7 @@ const App = () => {
                 >
                   {loadingPremium ? <CircularProgress size={24} /> : 'Quero ser Premium \ne ter mais Decisoes'}
                 </Button>
-
+                <SubscriptionPanels></SubscriptionPanels>
               </>
             )}
           </>

@@ -17,23 +17,19 @@ clients.forEach((client) => {
 });
 */
 eventRouter.get('/subscribe', async (req, res) => {
-    console.log("SUBSCRIBE");
     res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
     });
-    console.log("SUBSCRIBE1");
 
     userConn.set(req.user.id, res);
 
-    console.log("SUBSCRIBE2");
     req.on('close', () => {
         console.log('REQ CLOSE');
         userConn.delete(req.user.id);
         console.log(`Client disconnected. Total clients: ${userConn.size}`);
     });
-    console.log("SUBSCRIBE3");
 });
 
 /**
@@ -56,6 +52,7 @@ const sendEvent = (userId, eventType) => {
     const res = userConn.get(userId);
     const eventData = { eventType };
     res.write(`data: ${JSON.stringify(eventData)}\n\n`); // Send event to the user
+    userConn.delete(userId);
 }
 
 export default eventRouter;
