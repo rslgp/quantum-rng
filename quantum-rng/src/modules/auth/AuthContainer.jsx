@@ -40,7 +40,7 @@ function AuthContainer({ user, setUser }) {
         <div>
             {user ? (
                 <div>
-                    <p>Welcome, {user.name}!</p>
+                    <p>Welcome, {user.name}! premium: {user.isPremium.toString()} </p>
                     <button onClick={handleLogout}>Logout</button>
                 </div>
             ) : (

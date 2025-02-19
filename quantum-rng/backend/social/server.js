@@ -7,6 +7,7 @@ import consultQuantum from './routes/service/quantum.js';
 import setupWebhook from './routes/payment/webhook.js';
 import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
 import paymentRouter from './routes/payment/paymentRouter.js';
+import eventRouter from './routes/events/event_core.js';
 
 const app = express();
 setupWebhookStripe(app, express);
@@ -28,6 +29,7 @@ app.use(cors({
 // Use authRouter for authentication routes
 app.use("/auth", authRouter);
 app.use("/payment", paymentRouter);
+app.use("/event", eventRouter);
 
 // Routes
 app.get("/", (req, res) => {

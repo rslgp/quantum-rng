@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Checkout</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Você será direcionado ao Stripe Checkout</h1>
+  </div>
+
+  <script>
+    const stripeCheckout = async () => {
+      try {
+        const response = await fetch('/backend/payment/stripe/checkout', {
+          method: 'GET',
+        });
+
+        if (!response.ok) throw new Error('Network error');
+
+        const body_json = await response.json();
+        console.log(body_json);
+        const { sessionId } = body_json;
+
+        const stripe = Stripe('pk_test_51QsvxJK56JTr9UcaovP6KPDxB7BIzAEIA8YHtc511uHZOBhOwjcDQHGrlt1iueczdqZsBu8MVPRy8LhQ0Z9ua17s008yLmL59f');
+        await stripe.redirectToCheckout({ sessionId });
+      } catch (error) {
+        console.error('Error during Stripe checkout:', error);
+      }
+    };
+    stripeCheckout();
+  </script>
+</body>
+</html>

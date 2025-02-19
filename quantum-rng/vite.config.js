@@ -19,10 +19,16 @@ export default defineConfig(({ mode }) => {
         changeOrigin: true,        
         // rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
       },
-      '/payment': {
+      '/backend': {
         target: env.VITE_BACKEND_URL, // Your backend URL
         changeOrigin: true,        
-        // rewrite: (path) => path.replace(/^\/vacuumquantum/, ''), // Optional
+        rewrite: (path) => path.replace(/^\/backend/, ''), // Optional
+      },
+      '/backend/event': {
+        target: env.VITE_BACKEND_URL, // Your backend URL
+        changeOrigin: true,
+        ws:true,       
+        rewrite: (path) => path.replace(/^\/backend/, ''), // Optional
       },
     },
     

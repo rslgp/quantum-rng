@@ -122,6 +122,11 @@ authRouter.get("/user", isAuthRoute, (req, res) => {
   res.json(req.user);
 });
 
+authRouter.get("/patch_premium", isAuthRoute, async (req, res) => {
+  req.user = await patchPremium(req.user);
+  res.json(req.user);
+});
+
 const initAuth = (app) => {  
   //init middleware
   app.use(persist_session);

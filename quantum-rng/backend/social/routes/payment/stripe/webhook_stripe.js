@@ -1,5 +1,6 @@
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_0c300591b67af459accbbd35de3eab9dea8e45b6590a73760ee1b95a28d57e62';
 import { createPremium } from '../../auth/premium.js';
+import { sendEvent } from '../../events/event_core.js';
 import stripe from './stripe_premade.js';
 
 const setupWebhookStripe = (app, express) => {
@@ -33,6 +34,7 @@ const setupWebhookStripe = (app, express) => {
             const { userId } = metadata;
             console.log("NEW PREMIUM " + userId);
             await createPremium(userId);
+            sendEvent(userId, 'NEW_PREMIUM');
         }
 
         res.status(200).send('Received');

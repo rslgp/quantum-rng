@@ -121,22 +121,28 @@ const App = () => {
 
     setLoadingPremium(true);
 
-    const response = await fetch(
-      `/payment/stripe/checkout`,
-      {
-        method: 'GET',
-      }
-    );
-    // if (!response.ok) throw new Error('Network error');
+    //const response = await fetch(
+    //  `/backend/payment/stripe/checkout`,
+    //  {
+    //    method: 'GET',
+    //  }
+    //);
+    window.open('/quantum-rng/stripe-checkout.html', '_blank');
 
-    setLoadingPremium(false);
-    const body_json = await response.json();
-    console.log(body_json);
-    const { sessionId } = body_json;
+    const eventSource = new EventSource(`/backend/event/subscribe`);
+    eventSource.onmessage = async (event) => {
+      console.log('SSE res', event);
+      // update this session
+      const response = await fetch('/auth/patch_premium');
+      setUser(await response.json());
+      setLoadingPremium(false);
+    };
 
-    const stripe = Stripe('pk_test_51QsvxJK56JTr9UcaovP6KPDxB7BIzAEIA8YHtc511uHZOBhOwjcDQHGrlt1iueczdqZsBu8MVPRy8LhQ0Z9ua17s008yLmL59f');
-    await stripe.redirectToCheckout({ sessionId });
-
+    // Handle errors
+    eventSource.onerror = (error) => {
+      console.error('SSE error:', error);
+      eventSource.close(); // Reconnect if needed
+    };
 
   }
 
