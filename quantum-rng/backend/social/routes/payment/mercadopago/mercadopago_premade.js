@@ -9,9 +9,9 @@ preference.create({
   body: {
     items: [
       {
-        title: 'My product',
+        title: 'Mais Decisoes no app Arbitrio',
         quantity: 1,
-        unit_price: 2000
+        unit_price: 12.10
       }
     ],
   }

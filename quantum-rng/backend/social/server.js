@@ -2,10 +2,11 @@ import 'dotenv/config'
 import express from "express";
 import cors from 'cors';
 import { authRouter, initAuth, isAuthRoute } from "./routes/auth/auth_core.js";
-import rateLimiter, {paySomeLimit} from './routes/middleware/rate_limit.js';
+import rateLimiter, { paySomeLimit } from './routes/middleware/rate_limit.js';
 import consultQuantum from './routes/service/quantum.js';
 import setupWebhook from './routes/payment/webhook.js';
 import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
+import setupWebhookMercadopago from './routes/payment/mercadopago/webhook_mercadopago.js';
 import paymentRouter from './routes/payment/paymentRouter.js';
 import eventRouter from './routes/events/event_core.js';
 
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 initAuth(app);
 
 app.use(cors({
-  origin: ['localhost:5173','https://dashing-swift-precious.ngrok-free.app'],
+  origin: ['localhost:5173', 'https://dashing-swift-precious.ngrok-free.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow cookies to be sent with requests
@@ -33,7 +34,7 @@ app.use("/event", eventRouter);
 
 // Routes
 app.get("/", (req, res) => {
-  console.log(req.headers['x-forwarded-for'] , req.socket.remoteAddress);
+  console.log(req.headers['x-forwarded-for'], req.socket.remoteAddress);
   res.send('<a href="/auth/google">Sign in with Google</a>');
 });
 
@@ -48,10 +49,10 @@ app.get("/DEBUG/count", rateLimiter, (req, res) => {
 });
 
 app.get("/DEBUG/reduce/:amount", async (req, res) => {
-  const {amount} = req.params;
+  const { amount } = req.params;
   const id = req.user?.id || req.headers['x-real-ip'] || 'anom';
-  const requestCount = await paySomeLimit(id, amount);  
-  if(req.user) req.user.usage = requestCount;
+  const requestCount = await paySomeLimit(id, amount);
+  if (req.user) req.user.usage = requestCount;
   req.usage = requestCount;
   res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
@@ -59,9 +60,13 @@ app.get("/DEBUG/reduce/:amount", async (req, res) => {
 app.get('/vacuumquantum', rateLimiter, consultQuantum);
 
 setupWebhook(app, express);
+setupWebhookMercadopago(app);
 
 // Start server
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+
+export { app };

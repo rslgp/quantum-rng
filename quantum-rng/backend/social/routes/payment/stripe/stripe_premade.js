@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import product_list from '../products';
 const stripe = Stripe('sk_test_51QsvxJK56JTr9UcatV3AvyAhh9RMSafjHDhAuNqn39czUPcRstNCeAsG8F7VieZPkI8N65kI5vnioSSYH24XtBY400ghAfO3uI');
 
 /*
@@ -6,16 +7,17 @@ curl https://api.stripe.com/v1/payment_methods \
   -u sk_test_51QsvxJK56JTr9UcatV3AvyAhh9RMSafjHDhAuNqn39czUPcRstNCeAsG8F7VieZPkI8N65kI5vnioSSYH24XtBY400ghAfO3uI: \
   -d type=all
 */
-const product_list = {
-    mais_decisoes: {
-        name: 'Mais Decisoes pack x3',
-        price: 350
-    },
-    premium: {
-        name: 'Premium',
-        price: 1800
-    }
-}
+// const product_list = {
+//     mais_decisoes: {
+//         name: 'Mais Decisoes pack x3',
+//         price: 350
+//     },
+//     premium: {
+//         name: 'Premium',
+//         price: 1800
+//     }
+// }
+
 
 const session_payload = (userId, product='mais_decisoes', amount=1) => {
     return {
@@ -46,7 +48,7 @@ const session_payload = (userId, product='mais_decisoes', amount=1) => {
 };
 
 const checkout_session = async (userId, args = {}) => {
-    const { success_callback_url, product, amount } = args;
+    const { product, amount } = args;
 
     const session = await stripe.checkout.sessions.create(
         session_payload(userId,product,amount)

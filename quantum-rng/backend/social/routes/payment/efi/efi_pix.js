@@ -1,23 +1,20 @@
 import EfiPay from 'sdk-node-apis-efi'
 import options from './credentials.js'
+import product_list from '../products.js';
 
-// 1.19% per pix (same as stripe)
+// 1.19% per pix (same as stripe) (asaas eh para valores altos R$ 2.00 por transacao)
 
 let body = {
 	calendario: {
 		expiracao: 3600,
 	},
-	devedor: {
-		nome: 'USER_ID',
-		cpf: '06891530407',
-	},
 	valor: {
-		original: '12.10',
+		original: '0.01', // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
 	},
-	chave: '72da8d9a-955a-4198-9e5a-86c89d0cd67b', // Informe sua chave Pix cadastrada na efipay.	
+	chave: options.chave_pix, // Informe sua chave Pix cadastrada na efipay.	
 }
 console.log(options);
-console.log({options});
+console.log({ options });
 const efipay = new EfiPay(options)
 
 // O método pixCreateImmediateCharge indica os campos que devem ser enviados e que serão retornados
@@ -25,7 +22,10 @@ const efipay = new EfiPay(options)
 // efipay.pixCreateImmediateCharge({}, body)
 // 	.then((resposta) => {
 // 		console.log(resposta) // Aqui você tera acesso a resposta da API e os campos retornados de forma intuitiva
-		
+// 		// eh gerado um txid (o webhook recebe essa info), que eu preciso associar com userId internamente
+// 		// loc.id eh usado para gerar o QRCode img
+// 		const { txid, loc, pixCopiaECola } = resposta;
+// 		console.log(txid, loc.id, pixCopiaECola);
 // 	})
 // 	.catch((error) => {
 // 		console.log(error)
@@ -55,3 +55,34 @@ const efipay = new EfiPay(options)
 //     if (err) throw err;
 //     console.log('QR Code saved as pix_qrcode.png');
 // });
+
+
+const checkout_pix = async (userId, args = {}) => {
+	const { product='mais_decisoes', amount=1 } = args;
+	// const preco = ((product_list[product].price * amount) / 100).toFixed(2).toString();
+	
+	let body = {
+		calendario: {
+			expiracao: 3600,
+		},
+		valor: {
+			original: '0.01', // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
+		},
+		chave: options.chave_pix, // Informe sua chave Pix cadastrada na efipay.	
+	}
+	const pix_info = await efipay.pixCreateImmediateCharge({},body);
+	const { txid, loc, pixCopiaECola } = pix_info;
+	// associate txid com userId
+
+	const pix_img = await efipay.pixGenerateQRCode({id:loc.id});
+	const response = {
+		qrCodeBase64: pix_img.imagemQrcode,
+		txid,
+		pixCopiaECola,
+		qrCodeLink: pix_img.linkVisualizacao
+	}
+	return response;
+}
+
+export default checkout_pix;
+console.log(await checkout_pix('USER_ID'));
