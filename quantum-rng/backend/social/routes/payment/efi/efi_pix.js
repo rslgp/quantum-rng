@@ -1,3 +1,4 @@
+import QRCode from 'qrcode';
 import EfiPay from 'sdk-node-apis-efi'
 import options from './credentials.js'
 import product_list from '../products.js';
@@ -59,27 +60,28 @@ const efipay = new EfiPay(options)
 
 const checkout_pix = async (userId, args = {}) => {
 	const { product='mais_decisoes', amount=1 } = args;
-	// const preco = ((product_list[product].price * amount) / 100).toFixed(2).toString();
+	const preco = ((product_list[product].price * amount) / 100).toFixed(2).toString();
 	
 	let body = {
 		calendario: {
 			expiracao: 3600,
 		},
 		valor: {
-			original: '0.01', // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
+			original: preco, // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
 		},
 		chave: options.chave_pix, // Informe sua chave Pix cadastrada na efipay.	
 	}
 	const pix_info = await efipay.pixCreateImmediateCharge({},body);
-	const { txid, loc, pixCopiaECola } = pix_info;
+	const { txid, pixCopiaECola } = pix_info;
 	// associate txid com userId
+	const qrCodeBase64 = await QRCode.toDataURL(pixCopiaECola);
 
-	const pix_img = await efipay.pixGenerateQRCode({id:loc.id});
+	// const pix_img = await efipay.pixGenerateQRCode({id:loc.id});
 	const response = {
-		qrCodeBase64: pix_img.imagemQrcode,
+		qrCodeBase64, //: pix_img.imagemQrcode,
 		txid,
 		pixCopiaECola,
-		qrCodeLink: pix_img.linkVisualizacao
+		// qrCodeLink: pix_img.linkVisualizacao // shows my address
 	}
 	return response;
 }
