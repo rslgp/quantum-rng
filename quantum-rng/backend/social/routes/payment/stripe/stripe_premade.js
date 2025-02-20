@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import product_list from '../products';
+import product_list from '../products.js';
 const stripe = Stripe('sk_test_51QsvxJK56JTr9UcatV3AvyAhh9RMSafjHDhAuNqn39czUPcRstNCeAsG8F7VieZPkI8N65kI5vnioSSYH24XtBY400ghAfO3uI');
 
 /*

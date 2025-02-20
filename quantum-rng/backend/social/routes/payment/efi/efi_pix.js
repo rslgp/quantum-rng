@@ -3,6 +3,7 @@ import EfiPay from 'sdk-node-apis-efi'
 import options from './credentials.js'
 import product_list from '../products.js';
 
+const MAP_txid_userid = new Map();
 // 1.19% per pix (same as stripe) (asaas eh para valores altos R$ 2.00 por transacao)
 
 let body = {
@@ -14,8 +15,8 @@ let body = {
 	},
 	chave: options.chave_pix, // Informe sua chave Pix cadastrada na efipay.	
 }
-console.log(options);
-console.log({ options });
+// console.log(options);
+// console.log({ options });
 const efipay = new EfiPay(options)
 
 // O método pixCreateImmediateCharge indica os campos que devem ser enviados e que serão retornados
@@ -67,13 +68,16 @@ const checkout_pix = async (userId, args = {}) => {
 			expiracao: 3600,
 		},
 		valor: {
-			original: preco, // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
+			original: '0.01', // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
 		},
 		chave: options.chave_pix, // Informe sua chave Pix cadastrada na efipay.	
 	}
 	const pix_info = await efipay.pixCreateImmediateCharge({},body);
 	const { txid, pixCopiaECola } = pix_info;
 	// associate txid com userId
+	MAP_txid_userid.set(txid,{userId,product});
+	// deal security flaw no header secret for webhook
+	// create uma env secretWebhookEfiPix
 	const qrCodeBase64 = await QRCode.toDataURL(pixCopiaECola);
 
 	// const pix_img = await efipay.pixGenerateQRCode({id:loc.id});
@@ -87,4 +91,5 @@ const checkout_pix = async (userId, args = {}) => {
 }
 
 export default checkout_pix;
-console.log(await checkout_pix('USER_ID'));
+export {MAP_txid_userid};
+// console.log(await checkout_pix('USER_ID'));

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SubscriptionPanel from './SubscriptionPanelQuantity';  // Make sure the path is correct
 
-const SubscriptionPanels = () => {
+const SubscriptionPanels = ({setUser}) => {
   const [stripeLoaded, setStripeLoaded] = useState(false);
 
   useEffect(() => {
@@ -19,11 +19,25 @@ const SubscriptionPanels = () => {
   // The function to trigger Stripe checkout
   const stripeCheckout = async (productTag, quantityChosen) => {
     const url_stripe_checkout = `/quantum-rng/stripe-checkout.html?product=${productTag}&amount=${quantityChosen}`;
-      const newWindow = window.open(url_stripe_checkout, '_blank');
-      if (newWindow) {
-        newWindow.opener = null;  // Prevent access to the opener
-        newWindow.location.replace(url_stripe_checkout);  // Ensure referrer info isn't sent
-      }      
+    const newWindow = window.open(url_stripe_checkout, '_blank');
+    if (newWindow) {
+      newWindow.opener = null;  // Prevent access to the opener
+      newWindow.location.replace(url_stripe_checkout);  // Ensure referrer info isn't sent
+    }
+
+    const eventSource = new EventSource(`/backend/event/subscribe`);
+    eventSource.onmessage = async (event) => {
+      console.log('SSE res', event);
+      // update this session
+      const response = await fetch('/auth/patch_premium');
+      setUser(await response.json());
+    };
+
+    // Handle errors
+    eventSource.onerror = (error) => {
+      console.error('SSE error:', error);
+      eventSource.close(); // Reconnect if needed
+    };
   };
 
   return (

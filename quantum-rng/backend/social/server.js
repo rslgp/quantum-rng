@@ -6,7 +6,6 @@ import rateLimiter, { paySomeLimit } from './routes/middleware/rate_limit.js';
 import consultQuantum from './routes/service/quantum.js';
 import setupWebhook from './routes/payment/webhook.js';
 import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
-import setupWebhookMercadopago from './routes/payment/mercadopago/webhook_mercadopago.js';
 import paymentRouter from './routes/payment/paymentRouter.js';
 import eventRouter from './routes/events/event_core.js';
 
@@ -14,6 +13,7 @@ const app = express();
 setupWebhookStripe(app, express);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set('trust proxy', true); // use req.ip
 
 
 initAuth(app);
@@ -59,8 +59,7 @@ app.get("/DEBUG/reduce/:amount", async (req, res) => {
 
 app.get('/vacuumquantum', rateLimiter, consultQuantum);
 
-setupWebhook(app, express);
-setupWebhookMercadopago(app);
+setupWebhook(app);
 
 // Start server
 const PORT = 3000;

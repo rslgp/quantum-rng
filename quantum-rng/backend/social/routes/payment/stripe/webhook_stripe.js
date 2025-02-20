@@ -3,7 +3,8 @@ import { createPremium } from '../../auth/premium.js';
 import { sendEvent } from '../../events/event_core.js';
 import stripe from './stripe_premade.js';
 
-const setupWebhookStripe = (app, express) => {
+const setupWebhookStripe = (app,express) => {
+    //stripe listen --forward-to http://localhost:3000/webhook/stripe
     app.post('/webhook/stripe/', express.raw({ type: "application/json" }), async (req, res) => {
         // console.log(req.query, req.body, req.params, req.headers);
         const sig = req.headers["stripe-signature"];
@@ -12,13 +13,13 @@ const setupWebhookStripe = (app, express) => {
             return;
         }
         console.log("SIG", sig);
-
         const reqBody = JSON.parse(req.body.toString());
         if (reqBody.type !== 'checkout.session.completed') {
             res.status(200).send('IGNORED');
             return;
         }
 
+        // can be replaced with env webhooksecret
         let event;
         try {
             event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
@@ -31,7 +32,7 @@ const setupWebhookStripe = (app, express) => {
         const { payment_status, metadata } = event.data.object;
         console.log("METADATA", metadata, event.type);
         if (payment_status === 'paid') {
-            const { userId } = metadata;
+            const { userId, product } = metadata; //TODO premium switch
             console.log("NEW PREMIUM " + userId);
             await createPremium(userId);
             sendEvent(userId, 'NEW_PREMIUM');

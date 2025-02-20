@@ -118,39 +118,39 @@ const App = () => {
     setMessage(''); // Clear message if successful
   };
 
-  const stripeCheckout = async (product = 'mais_decisoes', quantity = 1) => {
+  // const stripeCheckout = async (product = 'mais_decisoes', quantity = 1) => {
 
-    setLoadingPremium(true);
+  //   setLoadingPremium(true);
 
-    //const response = await fetch(
-    //  `/backend/payment/stripe/checkout`,
-    //  {
-    //    method: 'GET',
-    //  }
-    //);
-    const url_stripe_checkout = `/quantum-rng/stripe-checkout.html?product=${product}&amount=${quantity}`;
-    const newWindow = window.open(url_stripe_checkout, '_blank');
-    if (newWindow) {
-      newWindow.opener = null;  // Prevent access to the opener
-      newWindow.location.replace(url_stripe_checkout);  // Ensure referrer info isn't sent
-    }
+  //   //const response = await fetch(
+  //   //  `/backend/payment/stripe/checkout`,
+  //   //  {
+  //   //    method: 'GET',
+  //   //  }
+  //   //);
+  //   const url_stripe_checkout = `/quantum-rng/stripe-checkout.html?product=${product}&amount=${quantity}`;
+  //   const newWindow = window.open(url_stripe_checkout, '_blank');
+  //   if (newWindow) {
+  //     newWindow.opener = null;  // Prevent access to the opener
+  //     newWindow.location.replace(url_stripe_checkout);  // Ensure referrer info isn't sent
+  //   }
 
-    const eventSource = new EventSource(`/backend/event/subscribe`);
-    eventSource.onmessage = async (event) => {
-      console.log('SSE res', event);
-      // update this session
-      const response = await fetch('/auth/patch_premium');
-      setUser(await response.json());
-      setLoadingPremium(false);
-    };
+  //   const eventSource = new EventSource(`/backend/event/subscribe`);
+  //   eventSource.onmessage = async (event) => {
+  //     console.log('SSE res', event);
+  //     // update this session
+  //     const response = await fetch('/auth/patch_premium');
+  //     setUser(await response.json());
+  //     setLoadingPremium(false);
+  //   };
 
-    // Handle errors
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error);
-      eventSource.close(); // Reconnect if needed
-    };
+  //   // Handle errors
+  //   eventSource.onerror = (error) => {
+  //     console.error('SSE error:', error);
+  //     eventSource.close(); // Reconnect if needed
+  //   };
 
-  }
+  // }
 
   const handleFetch = async () => {
     setLoading(true);
@@ -401,6 +401,8 @@ const App = () => {
 
             {user && (
               <>
+              {/* 
+              
                 <Button
                   variant="contained"
                   color="primary"
@@ -420,8 +422,10 @@ const App = () => {
                   }}
                 >
                   {loadingPremium ? <CircularProgress size={24} /> : 'Quero ser Premium \ne ter mais Decisoes'}
-                </Button>
-                <SubscriptionPanels></SubscriptionPanels>
+                </Button> 
+                
+                */}
+                <SubscriptionPanels setLoadingPremium={setLoadingPremium}></SubscriptionPanels>
               </>
             )}
           </>

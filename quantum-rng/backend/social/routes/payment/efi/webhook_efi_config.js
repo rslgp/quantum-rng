@@ -4,7 +4,7 @@ import options from './credentials.js'
 options['validateMtls'] = false
 
 let body = {
-	webhookUrl: 'https://pwim9iyoywpv.share.zrok.io/webhook/mercadopago',
+	webhookUrl: 'https://pwim9iyoywpv.share.zrok.io/webhook/efi',
 }
 
 let params = {

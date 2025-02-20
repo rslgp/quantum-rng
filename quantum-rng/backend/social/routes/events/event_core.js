@@ -17,6 +17,7 @@ clients.forEach((client) => {
 });
 */
 eventRouter.get('/subscribe', async (req, res) => {
+    console.log("REQUEST ON SUBSCRIBE");
     res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -50,6 +51,7 @@ const EventType = Object.freeze({
 const sendEvent = (userId, eventType) => {
     console.log("SEND EVENT", userId, eventType);
     const res = userConn.get(userId);
+    if(!res){console.error("problem on subscribe")}
     const eventData = { eventType };
     res.write(`data: ${JSON.stringify(eventData)}\n\n`); // Send event to the user
     userConn.delete(userId);
