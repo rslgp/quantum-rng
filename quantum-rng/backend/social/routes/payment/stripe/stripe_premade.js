@@ -41,7 +41,7 @@ const session_payload = (userId, product='mais_decisoes', amount=1) => {
 
         },
         mode: 'payment',
-        // success_url,
+        // TODO change success_url,
         success_url: `https://arbitrio.mapafome.com.br/webhook/stripe/callback_success?session_id={CHECKOUT_SESSION_ID}&userId=${userId}&product=${product}`,
 
     }
