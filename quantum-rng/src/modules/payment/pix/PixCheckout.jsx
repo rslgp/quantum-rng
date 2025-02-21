@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Container, Typography, Button, Card, CardContent, CircularProgress, TextField, IconButton } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check"; // Import Check Icon
+import eventWaitSubscribe from "../event/subscribe";
 
 
-export default function PixCheckout({ product, amount }) {
+export default function PixCheckout({ product, amount, setUser }) {
   const [loading, setLoading] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -15,6 +16,8 @@ export default function PixCheckout({ product, amount }) {
       const response = await fetch(`/backend/payment/efi/checkout?product=${product}&amount=${amount}`);
       const data = await response.json();
       setPaymentData(data.pix_data);
+
+      eventWaitSubscribe(setUser);
     } catch (error) {
       console.error("Error fetching payment data", error);
     }

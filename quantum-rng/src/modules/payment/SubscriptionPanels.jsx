@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SubscriptionPanel from './SubscriptionPanelQuantity';  // Make sure the path is correct
+import eventWaitSubscribe from './event/subscribe';
 
 const SubscriptionPanels = ({setUser}) => {
   const [stripeLoaded, setStripeLoaded] = useState(false);
@@ -25,19 +26,7 @@ const SubscriptionPanels = ({setUser}) => {
       newWindow.location.replace(url_stripe_checkout);  // Ensure referrer info isn't sent
     }
 
-    const eventSource = new EventSource(`/backend/event/subscribe`);
-    eventSource.onmessage = async (event) => {
-      console.log('SSE res', event);
-      // update this session
-      const response = await fetch('/auth/patch_premium');
-      setUser(await response.json());
-    };
-
-    // Handle errors
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error);
-      eventSource.close(); // Reconnect if needed
-    };
+    eventWaitSubscribe(setUser);
   };
 
   return (
