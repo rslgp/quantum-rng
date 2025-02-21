@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Button, Typography, IconButton, Box } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
+import PixCheckout from './pix/PixCheckout';
 
 const pack_decisoes = 3;
 const SubscriptionPanelQuantity = ({ title, price, productTag, onSelect, isQuantity = true }) => {
@@ -59,11 +60,13 @@ const SubscriptionPanelQuantity = ({ title, price, productTag, onSelect, isQuant
         <Button
           variant="contained"
           fullWidth
-          onClick={() => onSelect(productTag, quantity, totalPrice)}  // Pass quantity and total price to stripeCheckout
-          style={{ marginTop: 20 }}
+          onClick={() => onSelect(productTag, quantity)}  // Pass quantity and total price to stripeCheckout
+          sx={{ mt: 2 }}
         >
           Select
         </Button>
+        
+        <PixCheckout product={productTag} amount={quantity} />
       </CardContent>
     </Card>
   );

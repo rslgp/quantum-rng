@@ -68,7 +68,7 @@ const checkout_pix = async (userId, args = {}) => {
 			expiracao: 3600,
 		},
 		valor: {
-			original: '0.01', // 0.01 a 10.00 testa/simula sozinho pagamento com sucesso 
+			original: preco, // '0.01' a 10.00 testa/simula sozinho pagamento com sucesso 
 		},
 		chave: options.chave_pix, // Informe sua chave Pix cadastrada na efipay.	
 	}
