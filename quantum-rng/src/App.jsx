@@ -425,7 +425,7 @@ const App = () => {
                 </Button> 
                 
                 */}
-                <SubscriptionPanels setLoadingPremium={setLoadingPremium}></SubscriptionPanels>
+                <SubscriptionPanels user={user} setUser={setUser}></SubscriptionPanels>
               </>
             )}
           </>

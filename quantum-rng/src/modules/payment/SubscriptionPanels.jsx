@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import SubscriptionPanel from './SubscriptionPanelQuantity';  // Make sure the path is correct
 import eventWaitSubscribe from './event/subscribe';
+import precos from './produtos/precos';
 
-const SubscriptionPanels = ({setUser}) => {
+const SubscriptionPanels = ({user, setUser}) => {
   const [stripeLoaded, setStripeLoaded] = useState(false);
 
   useEffect(() => {
@@ -36,16 +37,18 @@ const SubscriptionPanels = ({setUser}) => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <SubscriptionPanel
             title="Mais Decisoes"
-            price={3.50}
-            productTag="mais_decisoes"
+            price={user.isPremium ? precos.mais_decisoes_premium : precos.mais_decisoes}
+            productTag={user.isPremium ? "mais_decisoes_premium" : "mais_decisoes"}
             onSelect={stripeCheckout}
+            setUser={setUser}
           />
           <SubscriptionPanel
             title="Premium"
-            price={18.00}
+            price={precos.premium}
             productTag="premium"
             isQuantity={false}
             onSelect={stripeCheckout}
+            setUser={setUser}
           />
         </div>
       ) : (

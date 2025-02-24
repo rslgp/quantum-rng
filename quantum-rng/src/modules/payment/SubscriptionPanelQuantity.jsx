@@ -4,7 +4,7 @@ import { Add, Remove } from '@mui/icons-material';
 import PixCheckout from './pix/PixCheckout';
 
 const pack_decisoes = 3;
-const SubscriptionPanelQuantity = ({ title, price, productTag, onSelect, isQuantity = true }) => {
+const SubscriptionPanelQuantity = ({ title, price, productTag, onSelect, isQuantity = true, setUser }) => {
   const [quantity, setQuantity] = useState(1);  // Default quantity set to 1
 
   const handleIncrease = () => {
@@ -66,7 +66,7 @@ const SubscriptionPanelQuantity = ({ title, price, productTag, onSelect, isQuant
           Select
         </Button>
         
-        <PixCheckout product={productTag} amount={quantity} />
+        <PixCheckout product={productTag} amount={quantity} setUser={setUser}/>
       </CardContent>
     </Card>
   );
