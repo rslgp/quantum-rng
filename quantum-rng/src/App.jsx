@@ -243,7 +243,7 @@ const App = () => {
       } else {
         majorityResult = 'Neutral\nFree Will + Arbítrio'; // Neutral is the default if there's a tie or no clear majority
       }
-      return majorityResult;
+      return "Resposta:\n"+majorityResult;
     }
 
     // Find the majority result
@@ -279,22 +279,24 @@ const App = () => {
           variant="outlined"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          onKeyPress={handlePasswordKeyPress} // Trigger action on "Enter"
+          onKeyUp={handlePasswordKeyPress} // Trigger action on "Enter"
           sx={{ m: 1 }}
           name="password" // Add a name attribute to help password managers
           autoComplete="current-password" // Allow Google Password Manager to identify the field
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleTogglePasswordVisibility}
-                  edge="end"
-                  aria-label="toggle password visibility"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleTogglePasswordVisibility}
+                    edge="end"
+                    aria-label="toggle password visibility"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
 
@@ -328,7 +330,6 @@ const App = () => {
         </Button>
 
         <Typography variant="h6" sx={{ whiteSpace: 'pre-line' }}>
-          Resposta:<br />
           {majorityResult}
         </Typography>
         <Box sx={{ mt: 1 }}>
@@ -379,25 +380,6 @@ const App = () => {
 
 
           <>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => { console.log(loadingMoreDecision); setLoadingMoreDecision(!loadingMoreDecision) }}
-              disabled={loadingMoreDecision}
-              sx={{
-                mb: '4vh',                // Responsive bottom margin
-                fontSize: { xs: '22px', sm: '22px' },          // Scales text size with viewport width
-                // minWidth: '80vw',         // Ensures button remains wide
-                // minHeight: '22vh',         // Taller button for better UX
-                borderRadius: '8px',      // Rounded corners for modern design
-                textTransform: 'none',    // Keeps text readable (avoid all caps)
-                display: 'flex',         // Ensures content is centered
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {loadingMoreDecision ? <CircularProgress size={24} /> : 'Quero mais 3 Decisoes'}
-            </Button>
 
             {user && (
               <>
