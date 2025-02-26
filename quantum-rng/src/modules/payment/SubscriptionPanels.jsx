@@ -50,6 +50,15 @@ const SubscriptionPanels = ({user, setUser}) => {
             onSelect={stripeCheckout}
             setUser={setUser}
           />
+
+<SubscriptionPanel
+            title="Reset limit"
+            price={2.00}
+            productTag="rate_limit"
+            isQuantity={false}
+            onSelect={stripeCheckout}
+            setUser={setUser}
+          />
         </div>
       ) : (
         <p>Loading...</p>
