@@ -9,6 +9,7 @@ import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
 import paymentRouter from './routes/payment/paymentRouter.js';
 import eventRouter from './routes/events/event_core.js';
 import {getUserId} from './routes/lib/userId/userId_util.js';
+import adaptChat from './routes/middleware/text_chat.js';
 
 const app = express();
 setupWebhookStripe(app, express);
@@ -58,7 +59,7 @@ app.get("/DEBUG/reduce/:amount", async (req, res) => {
   res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
-app.get('/vacuumquantum', rateLimiter, consultQuantum);
+app.get('/vacuumquantum', adaptChat, rateLimiter, consultQuantum);
 
 setupWebhook(app);
 

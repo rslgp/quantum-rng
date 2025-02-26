@@ -4,6 +4,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import persist_session from '../lib/persistence/session.js';
 import { OAuth2Client } from "google-auth-library";
 import { patchPremium } from "./premium.js";
+import dep_injection_telegram from "./text_chat_setup.js";
 
 const authRouter = Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENTID); // Initialize Google Auth Client
@@ -126,6 +127,8 @@ authRouter.get("/patch_premium", isAuthRoute, async (req, res) => {
   req.user = await patchPremium(req.user);
   res.json(req.user);
 });
+
+dep_injection_telegram(authRouter);
 
 const initAuth = (app) => {  
   //init middleware
