@@ -1,0 +1,402 @@
+{
+  "name": "telegram_arbitrio",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        -140
+      ],
+      "id": "c5ce50e7-cee4-4724-8df2-1e30e7430ae4",
+      "name": "Telegram Trigger",
+      "webhookId": "f4715f28-9903-4bdf-9434-d85a98b1645b",
+      "credentials": {
+        "telegramApi": {
+          "id": "9qubGvQBkkkcGJ6Z",
+          "name": "Telegram_arbitrio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.result.chat.id }}",
+        "messageId": "={{ $json.result.message_id }}",
+        "text": "={{ $json.telegramMessage }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        -140
+      ],
+      "id": "dd2138aa-025e-4086-8e8d-40cce8f07344",
+      "name": "Telegram",
+      "webhookId": "51a18495-9b80-498e-8656-2cf15c2b5669",
+      "credentials": {
+        "telegramApi": {
+          "id": "9qubGvQBkkkcGJ6Z",
+          "name": "Telegram_arbitrio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://reifel3000.share.zrok.io/vacuumquantum?telegram={{ $json.message.chat.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        -20
+      ],
+      "id": "ced36e01-8a2f-4f34-8f40-a79c80627655",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json;\nconst convertToFivePointScale = (value) => {\n  // Normalize the value to the standard normal distribution\n  // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17\n  const mean = 50;\n  const stdDev = 17; // Rough approximation for 68% coverage\n\n  // Calculate z-score\n  const zScore = (value - mean) / stdDev;\n  if (zScore <= -1.5) return {value:'Very Negative',scale:-2};  // Lower tail\n  if (zScore <= -0.5) return {value:'Negative',scale:-1};       // Below average\n  if (zScore <= 0.5) return {value:'Neutral',scale:0};         // Near mean\n  if (zScore <= 1.5) return {value:'Positive',scale:1};        // Above average\n  return {value:'Very Positive',scale:2};                      // Upper tail\n};\n\n\nconst data = body.result.data;\nconst maxValue = 100, minValue = 0;\n\nconst convertedNumbers = data\n  .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))\n  .sort((a, b) => b - a);\n\n\nconst counts = {\n  'Very Negative': 0,\n  'Negative': 0,\n  'Neutral': 0,\n  'Positive': 0,\n  'Very Positive': 0,\n};\n\n// Convert all quantum numbers to the five-point scale and store them\nconst result = [];\n\n\n// Count the occurrences of each sentiment\nconvertedNumbers.forEach((value) => {\n  const text = convertToFivePointScale(value);\n  result.push({value, text});\n  counts[text.value]++;\n});\n\nconst getMajority = (counts) => {\n  // Aggregate counts into 3 options\n  const aggregatedCounts = {\n    Negative: counts['Very Negative'] + counts['Negative'],\n    Neutral: counts['Neutral'],\n    Positive: counts['Very Positive'] + counts['Positive'],\n  };\n\n  // Determine the majority result\n  let majorityResult;\n  if (aggregatedCounts.Negative > aggregatedCounts.Positive && aggregatedCounts.Negative > aggregatedCounts.Neutral) {\n    majorityResult = 'Negative';\n  } else if (aggregatedCounts.Positive > aggregatedCounts.Negative && aggregatedCounts.Positive > aggregatedCounts.Neutral) {\n    majorityResult = 'Positive';\n  } else {\n    majorityResult = 'Neutral\\nFree Will + Arbítrio'; // Neutral is the default if there's a tie or no clear majority\n  }\n  return \"Resposta:\\n\" + majorityResult;\n}\n\n// Find the majority result\nconst majorityResult = getMajority(counts);\nconst vacuumquantum = { majorityResult, result };\nreturn [vacuumquantum];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        -20
+      ],
+      "id": "efb8ee1b-d3d3-4179-b5c2-7d118b1fa9d0",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const vacuumquantum = $input.first().json;\n\n// Function to get an emoji based on the result text\nconst getEmoji = (text) => {\n  if(text.scale == 0) return \"⚪\";\n  if(text.scale > 0) return \"🟢\"\n  else return \"🔴\";\n};\n\n// Function to generate the progress bar with a limit of 10 slots\nconst generateProgressBar = (value) => {\n  const slots = Math.round(value / 10); // Each slot represents 10%\n  return \"🟩\".repeat(slots) + \"⬜\".repeat(10 - slots); // Use █ for filled and ░ for empty\n};\n\n// Generate the Telegram message\nlet telegramMessage = `${vacuumquantum.majorityResult}\\n\\n`;\n\nvacuumquantum.result.forEach((result) => {\n  const emoji = getEmoji(result.text);\n  const progressBar = generateProgressBar(result.value);\n  telegramMessage += `${emoji} ${result.text.value} (${result.value}%)\\n${progressBar}\\n\\n`;\n});\nreturn [{telegramMessage}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        -20
+      ],
+      "id": "44b197c5-570b-4a94-ae26-60642ecb4a20",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        900,
+        -140
+      ],
+      "id": "6194061a-6b0e-448e-b6e6-c8cf6cf6694f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -60,
+        -400
+      ],
+      "id": "40fb0339-dcdc-4f7a-95cb-1b06ee026745",
+      "name": "Telegram1",
+      "webhookId": "9c09f09e-0e25-4025-a79d-b19a785b2743",
+      "credentials": {
+        "telegramApi": {
+          "id": "9qubGvQBkkkcGJ6Z",
+          "name": "Telegram_arbitrio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/decisao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "102c0508-64a9-42c9-9499-d9b4d98f09ed"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "decisao"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3346712a-2526-4fe7-ab9b-7f2bbbdef80b",
+                    "leftValue": "{{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -160,
+        -140
+      ],
+      "id": "d22531b0-64d3-4ce8-85d1-6ffc9397fbb0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "carregando...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        -280
+      ],
+      "id": "585c6857-c200-45ea-96f0-96a109118300",
+      "name": "Telegram4",
+      "webhookId": "5a67ff19-4b7a-4aca-b0e2-131602305ec1",
+      "credentials": {
+        "telegramApi": {
+          "id": "9qubGvQBkkkcGJ6Z",
+          "name": "Telegram_arbitrio"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        120,
+        -140
+      ],
+      "id": "f7b36dd7-e945-45a1-925f-39b1694a4060",
+      "name": "doDecision"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "use o botão azul menu (comandos) no lado inferior esquerdo",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        40,
+        180
+      ],
+      "id": "98a4c7ea-d85e-43e4-920c-7ed2f3cf9e14",
+      "name": "tutorial",
+      "webhookId": "578fb877-ac86-4f57-88b6-92f3cfecc7c9",
+      "credentials": {
+        "telegramApi": {
+          "id": "9qubGvQBkkkcGJ6Z",
+          "name": "Telegram_arbitrio"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "HTTP Request1": [
+      {
+        "json": {
+          "result": {
+            "success": true,
+            "data": [
+              127,
+              131,
+              38
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "doDecision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "tutorial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "doDecision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "doDecision": {
+      "main": [
+        [
+          {
+            "node": "Telegram4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tutorial": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a0df8e6f-4fb1-4975-a786-698268dd358a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "842eac159b33c8a0eaa76fd0f9015c475844c9c60a5387ffd003647044943cf5"
+  },
+  "id": "6Qb9cdgrRoFRM44B",
+  "tags": []
+}
