@@ -8,7 +8,7 @@ import setupWebhook from './routes/payment/webhook.js';
 import setupWebhookStripe from './routes/payment/stripe/webhook_stripe.js';
 import paymentRouter from './routes/payment/paymentRouter.js';
 import eventRouter from './routes/events/event_core.js';
-import {getUserId} from './routes/lib/userId/userId_util.js';
+import { getUserId } from './routes/lib/userId/userId_util.js';
 import adaptChat from './routes/middleware/text_chat.js';
 
 const app = express();
@@ -52,7 +52,8 @@ app.get("/DEBUG/count", rateLimiter, (req, res) => {
 
 app.get("/DEBUG/reduce/:amount", async (req, res) => {
   const { amount } = req.params;
-  const id = getUserId(req);
+  const { userIdQuery } = req.query;
+  const id =  userIdQuery || getUserId(req);
   const requestCount = await paySomeLimit(id, amount);
   if (req.user) req.user.usage = requestCount;
   req.usage = requestCount;
