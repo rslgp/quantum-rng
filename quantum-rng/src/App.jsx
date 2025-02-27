@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, CircularProgress, Box, Typography, Link, TextField, Divider, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, rgbToHex } from '@mui/material/styles';
 import QuantumCommunication from './modules/message1/QuantumCommunication';
 import AuthContainer from './modules/auth/AuthContainer';
 import SubscriptionPanels from './modules/payment/SubscriptionPanels';
@@ -53,10 +53,7 @@ const getBarColor = (value) => {
 };
 
 const App = () => {
-  const [quantumNumbers, setQuantumNumbers] = useState([]);
-  const [convertedValues, setConvertedValues] = useState([]);
-  const [majorityResult, setMajority] = useState('');
-  const [scale, setScale] = useState(['Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive']);
+  const [vacuumquantum, setVacuumquantum] = useState({ majorityResult: '', result: [] });
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -65,8 +62,6 @@ const App = () => {
   const [maxValue, setMaxValue] = useState(100);
   const [numResults, setNumResults] = useState(3);
   const [showPremium, setShowPremium] = useState(true); // Toggle visibility state
-  const [loadingMoreDecision, setLoadingMoreDecision] = useState(false);
-  const [loadingPremium, setLoadingPremium] = useState(false);
 
   const [user, setUser] = useState(() => {
     // Initialize user state from localStorage (if available)
@@ -161,7 +156,7 @@ const App = () => {
         method: 'GET',
       }
     );
-    // if (!response.ok) throw new Error('Network error');
+    if (!response.ok) throw new Error('Network error');
 
     const body_json = await response.json();
     console.log(body_json.result);
@@ -172,14 +167,10 @@ const App = () => {
         setMessage(
           "I'm sorry Dave, I'm afraid I can't do that - HAL 2001: A Space Odyssey (1968)"
         );
-        setQuantumNumbers([]);
-      } else {
-        // Convert numbers from (0-255) to (minValue-maxValue), sort, and set to state
-        const convertedNumbers = data
-          .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
-          .sort((a, b) => b - a);
 
-        setup(convertedNumbers);
+      } else {
+
+        setup(data);
         setMessage(''); // Clear message if successful
 
       }
@@ -203,9 +194,30 @@ const App = () => {
     setShowPassword(!showPassword); // Toggle password visibility
   };
 
-
   const setup = (quantumNumbers) => {
-    setQuantumNumbers(quantumNumbers);
+    const convertToFivePointScale = (value) => {
+      // Normalize the value to the standard normal distribution
+      // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17
+      const mean = 50;
+      const stdDev = 17; // Rough approximation for 68% coverage
+
+      // Calculate z-score
+      const zScore = (value - mean) / stdDev;
+
+      if (zScore <= -1.5) return 'Very Negative';  // Lower tail
+      if (zScore <= -0.5) return 'Negative';       // Below average
+      if (zScore <= 0.5) return 'Neutral';         // Near mean
+      if (zScore <= 1.5) return 'Positive';        // Above average
+      return 'Very Positive';                      // Upper tail
+    };
+
+    const maxValue = 100, minValue = 0;
+
+    const convertedNumbers = quantumNumbers
+      .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
+      .sort((a, b) => b - a);
+
+
     const counts = {
       'Very Negative': 0,
       'Negative': 0,
@@ -215,16 +227,15 @@ const App = () => {
     };
 
     // Convert all quantum numbers to the five-point scale and store them
-    const convertedValuesTemp = [];
+    const result = [];
 
 
     // Count the occurrences of each sentiment
-    quantumNumbers.forEach((value) => {
-      const temp = convertToFivePointScale(value);
-      convertedValuesTemp.push(temp);
-      counts[temp]++;
+    convertedNumbers.forEach((value) => {
+      const text = convertToFivePointScale(value);
+      result.push({ value, text });
+      counts[text]++;
     });
-    setConvertedValues(convertedValuesTemp);
 
     const getMajority = (counts) => {
       // Aggregate counts into 3 options
@@ -243,14 +254,15 @@ const App = () => {
       } else {
         majorityResult = 'Neutral\nFree Will + Arbítrio'; // Neutral is the default if there's a tie or no clear majority
       }
-      return "Resposta:\n"+majorityResult;
+      return "Resposta:\n" + majorityResult;
     }
 
     // Find the majority result
     const majorityResult = getMajority(counts);
-    setMajority(majorityResult);
+    const vacuumquantum = { majorityResult, result };
+    setVacuumquantum(vacuumquantum);
+    return vacuumquantum;
   }
-
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -330,43 +342,39 @@ const App = () => {
         </Button>
 
         <Typography variant="h6" sx={{ whiteSpace: 'pre-line' }}>
-          {majorityResult}
+          {vacuumquantum.majorityResult}
         </Typography>
-        <Box sx={{ mt: 1 }}>
-          {quantumNumbers.length > 0 && (
-            <>
-              <Typography variant="h6">Quantum Numbers (Sorted):</Typography>
-              {quantumNumbers.map((num, index) => {
-                const convertedValue = convertedValues[index];
-                return (
-                  <>
-                    <Typography variant="body1">
-                      {convertedValue} ({num})
-                    </Typography>
-                    <Box
-                      key={index}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        mb: 2,
-                        width: '100%',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          height: 20,
-                          width: `${num}%`,
-                          backgroundColor: getBarColor(convertedValue),
-                          transition: 'width 0.3s ease',
-                          mr: 2,
-                        }}
-                      />
-                    </Box>
-                  </>
-                );
-              })}
-            </>
-          )}
+        <Box sx={{ mt: 3, width: '40vw' }}>
+          {vacuumquantum.result.map((result, index) => (
+            <Box key={index} sx={{ mb: 4, width: '100%' }}> {/* Increased margin-bottom and full width */}
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'text.primary' }}>
+                {result.text} ({result.value}%)
+              </Typography>
+              <Box
+                sx={{
+                  height: 30, // Increased height of the progress bar
+                  width: '100%', // Full width
+                  background: '#292929',
+                  transition: 'width 0.5s ease, opacity 0.5s ease',
+                  borderRadius: 3, // More rounded corners
+                  boxShadow: 3, // Stronger shadow
+                  border: '1px solid rgba(0, 0, 0, 0.1)', // Subtle border
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: '100%',
+                    width: `${result.value}%`,
+                    background: getBarColor(result.text), // Light overlay for depth
+                    borderRadius: 3,
+                  },
+                }}
+              />
+            </Box>
+          ))}
         </Box>
 
         {message && (
@@ -383,7 +391,7 @@ const App = () => {
 
             {user && (
               <>
-              {/* 
+                {/* 
               
                 <Button
                   variant="contained"
