@@ -105,27 +105,6 @@
     },
     {
       "parameters": {
-        "operation": "sendChatAction",
-        "chatId": "={{ $json.message.chat.id }}"
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -60,
-        -400
-      ],
-      "id": "40fb0339-dcdc-4f7a-95cb-1b06ee026745",
-      "name": "Telegram1",
-      "webhookId": "9c09f09e-0e25-4025-a79d-b19a785b2743",
-      "credentials": {
-        "telegramApi": {
-          "id": "9qubGvQBkkkcGJ6Z",
-          "name": "Telegram_arbitrio"
-        }
-      }
-    },
-    {
-      "parameters": {
         "rules": {
           "values": [
             {
@@ -328,11 +307,6 @@
       "main": [
         [
           {
-            "node": "Telegram1",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "doDecision",
             "type": "main",
             "index": 0
@@ -392,7 +366,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "a0df8e6f-4fb1-4975-a786-698268dd358a",
+  "versionId": "b3789308-9cd1-4ae3-a0b7-eb72077aca05",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "842eac159b33c8a0eaa76fd0f9015c475844c9c60a5387ffd003647044943cf5"
