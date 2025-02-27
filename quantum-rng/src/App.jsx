@@ -156,9 +156,15 @@ const App = () => {
         method: 'GET',
       }
     );
-    if (!response.ok) throw new Error('Network error');
-
     const body_json = await response.json();
+    if (!response.ok) {
+      setLoading(false);
+      setMessage(
+        `Limite atingindo aguarde: ${body_json.missingTime || "8 horas"} ou compre o reset de limite`
+      );
+      throw new Error('Network error');
+    };
+
     console.log(body_json.result);
     if (body_json.result) {
       const { success, data } = body_json.result;
@@ -203,17 +209,18 @@ const App = () => {
 
       // Calculate z-score
       const zScore = (value - mean) / stdDev;
-
-      if (zScore <= -1.5) return 'Very Negative';  // Lower tail
-      if (zScore <= -0.5) return 'Negative';       // Below average
-      if (zScore <= 0.5) return 'Neutral';         // Near mean
-      if (zScore <= 1.5) return 'Positive';        // Above average
-      return 'Very Positive';                      // Upper tail
+      if (zScore <= -1.5) return { value: 'Very Negative', scale: -2 };  // Lower tail
+      if (zScore <= -0.5) return { value: 'Negative', scale: -1 };       // Below average
+      if (zScore <= 0.5) return { value: 'Neutral', scale: 0 };         // Near mean
+      if (zScore <= 1.5) return { value: 'Positive', scale: 1 };        // Above average
+      return { value: 'Very Positive', scale: 2 };                      // Upper tail
     };
 
+
+    const data = quantumNumbers;
     const maxValue = 100, minValue = 0;
 
-    const convertedNumbers = quantumNumbers
+    const convertedNumbers = data
       .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))
       .sort((a, b) => b - a);
 
@@ -234,7 +241,7 @@ const App = () => {
     convertedNumbers.forEach((value) => {
       const text = convertToFivePointScale(value);
       result.push({ value, text });
-      counts[text]++;
+      counts[text.value]++;
     });
 
     const getMajority = (counts) => {
@@ -348,7 +355,7 @@ const App = () => {
           {vacuumquantum.result.map((result, index) => (
             <Box key={index} sx={{ mb: 4, width: '100%' }}> {/* Increased margin-bottom and full width */}
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'text.primary' }}>
-                {result.text} ({result.value}%)
+                {result.text.value} ({result.value}%)
               </Typography>
               <Box
                 sx={{
@@ -368,7 +375,7 @@ const App = () => {
                     left: 0,
                     height: '100%',
                     width: `${result.value}%`,
-                    background: getBarColor(result.text), // Light overlay for depth
+                    background: getBarColor(result.text.value), // Light overlay for depth
                     borderRadius: 3,
                   },
                 }}
