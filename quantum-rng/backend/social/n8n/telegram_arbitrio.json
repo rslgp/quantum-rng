@@ -247,7 +247,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body;\nconst telegramMessage = `aguarde ${body.missingTime || \"8 horas\"} ou acesse arbitrio.mapafome.com.br/user/setup_chat?telegram=${$('doDecision').first().json.message.chat.id}\\npara criar sua conta`;\nreturn [{telegramMessage}];"
+        "jsCode": "const {body} = $input.first().json;\nconst telegramMessage = `aguarde ${body.missingTime || \"8 horas\"} ou acesse arbitrio.mapafome.com.br/user/setup_chat?telegram=${$('doDecision').first().json.message.chat.id}\\npara criar sua conta`;\nreturn [{telegramMessage}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -260,7 +260,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json;\nconst convertToFivePointScale = (value) => {\n  // Normalize the value to the standard normal distribution\n  // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17\n  const mean = 50;\n  const stdDev = 17; // Rough approximation for 68% coverage\n\n  // Calculate z-score\n  const zScore = (value - mean) / stdDev;\n  if (zScore <= -1.5) return {value:'Very Negative',scale:-2};  // Lower tail\n  if (zScore <= -0.5) return {value:'Negative',scale:-1};       // Below average\n  if (zScore <= 0.5) return {value:'Neutral',scale:0};         // Near mean\n  if (zScore <= 1.5) return {value:'Positive',scale:1};        // Above average\n  return {value:'Very Positive',scale:2};                      // Upper tail\n};\n\n\nconst data = body.result.data;\nconst maxValue = 100, minValue = 0;\n\nconst convertedNumbers = data\n  .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))\n  .sort((a, b) => b - a);\n\n\nconst counts = {\n  'Very Negative': 0,\n  'Negative': 0,\n  'Neutral': 0,\n  'Positive': 0,\n  'Very Positive': 0,\n};\n\n// Convert all quantum numbers to the five-point scale and store them\nconst result = [];\n\n\n// Count the occurrences of each sentiment\nconvertedNumbers.forEach((value) => {\n  const text = convertToFivePointScale(value);\n  result.push({value, text});\n  counts[text.value]++;\n});\n\nconst getMajority = (counts) => {\n  // Aggregate counts into 3 options\n  const aggregatedCounts = {\n    Negative: counts['Very Negative'] + counts['Negative'],\n    Neutral: counts['Neutral'],\n    Positive: counts['Very Positive'] + counts['Positive'],\n  };\n\n  // Determine the majority result\n  let majorityResult;\n  if (aggregatedCounts.Negative > aggregatedCounts.Positive && aggregatedCounts.Negative > aggregatedCounts.Neutral) {\n    majorityResult = 'Negative';\n  } else if (aggregatedCounts.Positive > aggregatedCounts.Negative && aggregatedCounts.Positive > aggregatedCounts.Neutral) {\n    majorityResult = 'Positive';\n  } else {\n    majorityResult = 'Neutral\\nFree Will + Arbítrio'; // Neutral is the default if there's a tie or no clear majority\n  }\n  return \"Resposta:\\n\" + majorityResult;\n}\n\n// Find the majority result\nconst majorityResult = getMajority(counts);\nconst vacuumquantum = { majorityResult, result };\nreturn [vacuumquantum];"
+        "jsCode": "const {body} = $input.first().json;\nconst convertToFivePointScale = (value) => {\n  // Normalize the value to the standard normal distribution\n  // Assuming values are in the range [0, 100], with a mean of 50 and standard deviation of ~17\n  const mean = 50;\n  const stdDev = 17; // Rough approximation for 68% coverage\n\n  // Calculate z-score\n  const zScore = (value - mean) / stdDev;\n  if (zScore <= -1.5) return {value:'Very Negative',scale:-2};  // Lower tail\n  if (zScore <= -0.5) return {value:'Negative',scale:-1};       // Below average\n  if (zScore <= 0.5) return {value:'Neutral',scale:0};         // Near mean\n  if (zScore <= 1.5) return {value:'Positive',scale:1};        // Above average\n  return {value:'Very Positive',scale:2};                      // Upper tail\n};\n\n\nconst data = body.result.data;\nconst maxValue = 100, minValue = 0;\n\nconst convertedNumbers = data\n  .map((num) => Math.floor((num / 255) * (maxValue - minValue) + minValue))\n  .sort((a, b) => b - a);\n\n\nconst counts = {\n  'Very Negative': 0,\n  'Negative': 0,\n  'Neutral': 0,\n  'Positive': 0,\n  'Very Positive': 0,\n};\n\n// Convert all quantum numbers to the five-point scale and store them\nconst result = [];\n\n\n// Count the occurrences of each sentiment\nconvertedNumbers.forEach((value) => {\n  const text = convertToFivePointScale(value);\n  result.push({value, text});\n  counts[text.value]++;\n});\n\nconst getMajority = (counts) => {\n  // Aggregate counts into 3 options\n  const aggregatedCounts = {\n    Negative: counts['Very Negative'] + counts['Negative'],\n    Neutral: counts['Neutral'],\n    Positive: counts['Very Positive'] + counts['Positive'],\n  };\n\n  // Determine the majority result\n  let majorityResult;\n  if (aggregatedCounts.Negative > aggregatedCounts.Positive && aggregatedCounts.Negative > aggregatedCounts.Neutral) {\n    majorityResult = 'Negative';\n  } else if (aggregatedCounts.Positive > aggregatedCounts.Negative && aggregatedCounts.Positive > aggregatedCounts.Neutral) {\n    majorityResult = 'Positive';\n  } else {\n    majorityResult = 'Neutral\\nFree Will + Arbítrio'; // Neutral is the default if there's a tie or no clear majority\n  }\n  return \"Resposta:\\n\" + majorityResult;\n}\n\n// Find the majority result\nconst majorityResult = getMajority(counts);\nconst vacuumquantum = { majorityResult, result };\nreturn [vacuumquantum];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -429,12 +429,12 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "dd8a1ef2-d5f8-4f4a-b8fe-520994564d19",
+  "versionId": "39a3ea39-5fd0-4f2a-bbef-f19d4ae987ac",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "842eac159b33c8a0eaa76fd0f9015c475844c9c60a5387ffd003647044943cf5"
