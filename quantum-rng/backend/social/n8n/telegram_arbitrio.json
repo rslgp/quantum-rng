@@ -11,16 +11,16 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
       "position": [
-        -360,
-        -140
+        -500,
+        -100
       ],
-      "id": "c5ce50e7-cee4-4724-8df2-1e30e7430ae4",
+      "id": "7af27b58-7f3e-4a58-9fad-3f8916cf6182",
       "name": "Telegram Trigger",
       "webhookId": "f4715f28-9903-4bdf-9434-d85a98b1645b",
       "credentials": {
         "telegramApi": {
-          "id": "9qubGvQBkkkcGJ6Z",
-          "name": "Telegram_arbitrio"
+          "id": "xT0bnpGp2Ai5OAv9",
+          "name": "Telegram account"
         }
       }
     },
@@ -35,22 +35,22 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1380,
-        -260
+        1240,
+        -220
       ],
-      "id": "dd2138aa-025e-4086-8e8d-40cce8f07344",
+      "id": "a52362d9-0dbd-48f8-8a60-464ef295896a",
       "name": "Telegram",
       "webhookId": "51a18495-9b80-498e-8656-2cf15c2b5669",
       "credentials": {
         "telegramApi": {
-          "id": "9qubGvQBkkkcGJ6Z",
-          "name": "Telegram_arbitrio"
+          "id": "xT0bnpGp2Ai5OAv9",
+          "name": "Telegram account"
         }
       }
     },
     {
       "parameters": {
-        "url": "=https://reifel3000.share.zrok.io/vacuumquantum?telegram={{ $json.message.chat.id }}",
+        "url": "=https://arbitrio.mapafome.com.br/backend/vacuumquantum?telegram={{ $json.message.chat.id }}",
         "options": {
           "response": {
             "response": {
@@ -63,10 +63,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        320,
-        -20
+        180,
+        20
       ],
-      "id": "ced36e01-8a2f-4f34-8f40-a79c80627655",
+      "id": "a16d0628-44aa-4b04-a3dd-455001cb249c",
       "name": "HTTP Request1",
       "alwaysOutputData": true
     },
@@ -79,10 +79,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        1140,
-        -260
+        1000,
+        -220
       ],
-      "id": "6194061a-6b0e-448e-b6e6-c8cf6cf6694f",
+      "id": "505bff97-7bb6-4198-9b6f-121ee32334f2",
       "name": "Merge"
     },
     {
@@ -147,10 +147,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -160,
-        -140
+        -300,
+        -100
       ],
-      "id": "d22531b0-64d3-4ce8-85d1-6ffc9397fbb0",
+      "id": "47ef5dde-0d21-4fc3-90a3-118b086a225a",
       "name": "Switch"
     },
     {
@@ -164,16 +164,16 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        320,
-        -280
+        180,
+        -240
       ],
-      "id": "585c6857-c200-45ea-96f0-96a109118300",
+      "id": "09ac0618-3043-4317-8887-35e63e450e7c",
       "name": "Telegram4",
       "webhookId": "5a67ff19-4b7a-4aca-b0e2-131602305ec1",
       "credentials": {
         "telegramApi": {
-          "id": "9qubGvQBkkkcGJ6Z",
-          "name": "Telegram_arbitrio"
+          "id": "xT0bnpGp2Ai5OAv9",
+          "name": "Telegram account"
         }
       }
     },
@@ -182,10 +182,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        120,
-        -140
+        -20,
+        -100
       ],
-      "id": "f7b36dd7-e945-45a1-925f-39b1694a4060",
+      "id": "bd9bcdca-5183-426b-8929-78cb8f992142",
       "name": "doDecision"
     },
     {
@@ -199,16 +199,16 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        40,
-        180
+        -100,
+        220
       ],
-      "id": "98a4c7ea-d85e-43e4-920c-7ed2f3cf9e14",
+      "id": "d1922baa-570a-46bb-a993-e1246f2ebf18",
       "name": "tutorial",
       "webhookId": "578fb877-ac86-4f57-88b6-92f3cfecc7c9",
       "credentials": {
         "telegramApi": {
-          "id": "9qubGvQBkkkcGJ6Z",
-          "name": "Telegram_arbitrio"
+          "id": "xT0bnpGp2Ai5OAv9",
+          "name": "Telegram account"
         }
       }
     },
@@ -239,10 +239,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        500,
-        -20
+        360,
+        20
       ],
-      "id": "5afff7d2-39ee-43c7-b532-aa41bb5ef48c",
+      "id": "5a2c856d-b8e7-427d-b809-c36b55c4470c",
       "name": "rate_limit"
     },
     {
@@ -252,10 +252,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        920,
-        40
+        780,
+        80
       ],
-      "id": "4bec5bb0-1ea3-4806-84f7-2e291849479d",
+      "id": "cf87c30d-0cf3-47a5-9f5c-a6c0c07f82fb",
       "name": "rate_limit_msg"
     },
     {
@@ -265,10 +265,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        740,
-        -140
+        600,
+        -100
       ],
-      "id": "efb8ee1b-d3d3-4179-b5c2-7d118b1fa9d0",
+      "id": "ce3fb030-a2f7-4712-8685-2bdfa67c722d",
       "name": "default_code"
     },
     {
@@ -278,10 +278,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        920,
-        -140
+        780,
+        -100
       ],
-      "id": "44b197c5-570b-4a94-ae26-60642ecb4a20",
+      "id": "534268d5-2d6d-48ab-9da1-8faa7dee1f6c",
       "name": "format_telegram_msg"
     }
   ],
@@ -372,11 +372,6 @@
         ]
       ]
     },
-    "tutorial": {
-      "main": [
-        []
-      ]
-    },
     "rate_limit": {
       "main": [
         [
@@ -429,16 +424,15 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1",
-    "callerPolicy": "workflowsFromSameOwner"
+    "executionOrder": "v1"
   },
-  "versionId": "39a3ea39-5fd0-4f2a-bbef-f19d4ae987ac",
+  "versionId": "1b0ee771-795c-4992-9435-4bbfbafde77e",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "842eac159b33c8a0eaa76fd0f9015c475844c9c60a5387ffd003647044943cf5"
+    "instanceId": "c36adffdf3c5fe0dc60791f342c938087a2f9f23191c18913bf25f33770a5b3e"
   },
-  "id": "6Qb9cdgrRoFRM44B",
+  "id": "SVnVC12AR4V7lfbp",
   "tags": []
 }
