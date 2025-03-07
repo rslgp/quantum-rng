@@ -63,7 +63,8 @@ app.get("/DEBUG/reduce/:amount", async (req, res) => {
   res.send(`Welcome, ${req.user?.name || 'anom'} ${req.usage}! <a href="/auth/logout">Logout</a>`);
 });
 
-app.get('/vacuumquantum', adaptChat, rateLimiter, consultQuantum);
+//app.get('/vacuumquantum', adaptChat, rateLimiter, consultQuantum);
+app.get('/vacuumquantum', consultQuantum); //DEBUG
 
 setupWebhook(app);
 
