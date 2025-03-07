@@ -22,8 +22,8 @@ const fetchQuantumNumbers = async (apiKey) => {
 const apiKeysQuantum = process.env.VITE_API_KEY_QUANTUM.split(',');
 const consultQuantum = async (req, res) => {
   //DEBUG ENABLE
-  res.json({ "result": { "success": true, "data": [167, 96, 134], "usage": 1 } });
-  return;
+  // res.json({ "result": { "success": true, "data": [167, 96, 134], "usage": 1 } });
+  // return;
 
   let success = false;
   let response = null;
