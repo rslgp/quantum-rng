@@ -37,7 +37,7 @@ app.use("/event", eventRouter);
 // Routes
 app.get("/", (req, res) => {
   console.log(req.headers['x-forwarded-for'], req.socket.remoteAddress);
-  res.send('<a href="backend/auth/google">Sign in with Google</a>');
+  res.send('<a href="./auth/google">Sign in with Google</a>');
 });
 
 // Protected dashboard route
