@@ -42,10 +42,6 @@ passport.deserializeUser( async (user, done) => {
   done(null, user);
 });
 
-// Google OAuth login
-authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-
 // Google token verification endpoint
 authRouter.post("/google/token", async (req, res) => {
   console.log(req.body);
@@ -88,13 +84,24 @@ authRouter.post("/google/token", async (req, res) => {
 });
 
 
+// Google OAuth login
+authRouter.get("/google", 
+  (req,res,next) => { 
+   const state = Buffer.from(JSON.stringify(req.query)).toString('base64');
+   passport.authenticate("google", { scope: ["profile", "email"], state })(req, res, next);
+ }
+ );
+
 // Google OAuth callback
 authRouter.get("/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
     // called after passport passport.use(new GoogleStrategy({
     // req.user.sessionID = req.sessionID;
-    const queryString = new URLSearchParams(req.query).toString();
+
+    const state = JSON.parse(Buffer.from(req.query.state, 'base64').toString());
+
+    const queryString = new URLSearchParams(state).toString();
 
     res.redirect(`backend/?${queryString}`);
   }
