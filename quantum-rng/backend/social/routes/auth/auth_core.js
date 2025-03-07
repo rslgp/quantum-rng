@@ -103,7 +103,7 @@ authRouter.get("/google/callback",
 
     const queryString = new URLSearchParams(state).toString();
 
-    res.redirect(`/backend/?${queryString}`);
+    res.redirect(`/backend/auth/user/setup_chat/?${queryString}`);
   }
 );
 
