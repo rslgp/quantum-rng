@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
 
 // Protected dashboard route
 app.get("/dashboard", isAuthRoute, (req, res) => {
-  res.send(`Welcome, ${req.user.name}! <a href="/auth/logout">Logout</a>`);
+  res.send(`Welcome, ${req.user.name}! <a href="./auth/logout">Logout</a>`);
 });
 
 
