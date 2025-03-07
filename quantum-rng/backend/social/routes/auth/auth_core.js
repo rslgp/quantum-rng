@@ -25,7 +25,7 @@ const userDataPattern = async (payload) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
+  callbackURL: "backend/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
   // Store user profile in session
   const user = await userDataPattern(profile._json)
