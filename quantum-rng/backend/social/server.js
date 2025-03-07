@@ -37,7 +37,8 @@ app.use("/event", eventRouter);
 // Routes
 app.get("/", (req, res) => {
   console.log(req.headers['x-forwarded-for'], req.socket.remoteAddress);
-  let authUrl = `./auth/google?${JSON.stringify(req.query)}`;
+  const queryString = new URLSearchParams(req.query).toString();
+  let authUrl = `./auth/google?${queryString}`;  
   authUrl = "<a href="+authUrl+">Sign in with Google</a>";
   res.send(authUrl);
 });
