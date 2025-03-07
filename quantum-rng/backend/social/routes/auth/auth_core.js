@@ -94,7 +94,9 @@ authRouter.get("/google/callback",
   (req, res) => {
     // called after passport passport.use(new GoogleStrategy({
     // req.user.sessionID = req.sessionID;
-    res.redirect("/dashboard");
+    const queryString = new URLSearchParams(req.query).toString();
+
+    res.redirect(`backend/?${queryString}`);
   }
 );
 
