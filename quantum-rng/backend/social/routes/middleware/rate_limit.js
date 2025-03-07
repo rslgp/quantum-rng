@@ -8,7 +8,7 @@ const RATE_LIMIT_PREMIUM = RATE_LIMIT_GLOBAL + 10; // Max requests allowed
 const KEY_RATE_LIMIT = `rate-limit:`;
 
 
-const WINDOW_TIME_GLOBAL = 8 * 3600; // Time window to reset limit in seconds (1 hour)
+const WINDOW_TIME_GLOBAL = 2 * 3600; // Time window to reset limit in seconds (1 hour)
 
 async function rateLimiter(req, res, next) {
     let userId = getUserId(req); //default use ip, config express to use req.ip (app.set('trust proxy', true);), other options req.headers['x-forwarded-for']?.join(',')[0]
